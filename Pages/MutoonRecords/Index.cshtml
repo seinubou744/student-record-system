@@ -1,0 +1,47 @@
+@page
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize(Roles = "Admin")]
+@model StudentRecordSystem.Pages_MutoonRecords.IndexModel
+
+@{
+    ViewData["Title"] = "Mutoon Records";
+}
+
+<h1>Mutoon Records</h1>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">Create New Record</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Admission No</th>
+            <th>Matn Name</th>
+            <th>Portion Reached</th>
+            <th>Record Date</th>
+            <th>Remarks</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.MutoonRecord)
+{
+        <tr>
+            <td>@item.Student?.FullName</td>
+            <td>@item.Student?.AdmissionNo</td>
+            <td>@item.MatnName</td>
+            <td>@item.Portion</td>
+            <td>@item.RecordDate.ToShortDateString()</td>
+            <td>@item.Remarks</td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,37 @@
+@page
+@model StudentRecordSystem.Pages.StudentPortal.MutoonProgressModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "My Mutoon Progress";
+}
+
+<h1 class="mb-3">My Mutoon Progress</h1>
+
+@if (Model.MutoonRecords.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Portion</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.MutoonRecords)
+                {
+                    <tr>
+                        <td>@item.RecordDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.Portion</td>
+                        <td>@item.Remarks</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No Mutoon progress records found.</div>
+}

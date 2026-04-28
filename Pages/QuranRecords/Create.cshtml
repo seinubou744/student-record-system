@@ -1,0 +1,84 @@
+@page
+@model StudentRecordSystem.Pages_QuranRecords.CreateModel
+
+@{
+    ViewData["Title"] = "Create Quran Record";
+}
+
+<h1>Create Quran Record</h1>
+
+<h4>Quran Record</h4>
+<hr />
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css" />
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.StudentId" class="control-label"></label>
+                <select asp-for="QuranRecord.StudentId" class="form-control" asp-items="Model.StudentList">
+                    <option value="">-- Select Student --</option>
+                </select>
+                <span asp-validation-for="QuranRecord.StudentId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.SurahName" class="control-label"></label>
+                <select asp-for="QuranRecord.SurahName"
+                        class="selectpicker form-control"
+                        data-live-search="true"
+                        data-size="10"
+                        title="Search and select a surah"
+                        asp-items="Model.SurahList">
+                </select>
+                <span asp-validation-for="QuranRecord.SurahName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.PageNumber" class="control-label"></label>
+                <input asp-for="QuranRecord.PageNumber" class="form-control" />
+                <span asp-validation-for="QuranRecord.PageNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.FromAyah" class="control-label"></label>
+                <input asp-for="QuranRecord.FromAyah" class="form-control" />
+                <span asp-validation-for="QuranRecord.FromAyah" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.ToAyah" class="control-label"></label>
+                <input asp-for="QuranRecord.ToAyah" class="form-control" />
+                <span asp-validation-for="QuranRecord.ToAyah" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.RecordDate" class="control-label"></label>
+                <input asp-for="QuranRecord.RecordDate" class="form-control" />
+                <span asp-validation-for="QuranRecord.RecordDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="QuranRecord.Remarks" class="control-label"></label>
+                <input asp-for="QuranRecord.Remarks" class="form-control" />
+                <span asp-validation-for="QuranRecord.Remarks" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save Quran Record" class="btn btn-primary" />
+                <a asp-page="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+}

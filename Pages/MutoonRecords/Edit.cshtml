@@ -1,0 +1,57 @@
+@page
+@model StudentRecordSystem.Pages_MutoonRecords.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>MutoonRecord</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MutoonRecord.Id" />
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="MutoonRecord.StudentId" class="control-label"></label>
+                <select asp-for="MutoonRecord.StudentId" class="form-control" asp-items="ViewBag.StudentId" aria-required="true"></select>
+                <span asp-validation-for="MutoonRecord.StudentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="MutoonRecord.MatnName" class="control-label"></label>
+                <input asp-for="MutoonRecord.MatnName" class="form-control" aria-required="true"/>
+                <span asp-validation-for="MutoonRecord.MatnName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MutoonRecord.Portion" class="control-label"></label>
+                <input asp-for="MutoonRecord.Portion" class="form-control" />
+                <span asp-validation-for="MutoonRecord.Portion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MutoonRecord.RecordDate" class="control-label"></label>
+                <input asp-for="MutoonRecord.RecordDate" class="form-control" />
+                <span asp-validation-for="MutoonRecord.RecordDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MutoonRecord.Remarks" class="control-label"></label>
+                <input asp-for="MutoonRecord.Remarks" class="form-control" />
+                <span asp-validation-for="MutoonRecord.Remarks" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

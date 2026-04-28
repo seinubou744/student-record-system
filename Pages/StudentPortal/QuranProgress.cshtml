@@ -1,0 +1,41 @@
+@page
+@model StudentRecordSystem.Pages.StudentPortal.QuranProgressModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "My Qur'an Progress";
+}
+
+<h1 class="mb-3">My Qur'an Progress</h1>
+
+@if (Model.QuranRecords.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Surah</th>
+                    <th>From Ayah</th>
+                    <th>To Ayah</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.QuranRecords)
+                {
+                    <tr>
+                        <td>@item.RecordDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.SurahName</td>
+                        <td>@item.FromAyah</td>
+                        <td>@item.ToAyah</td>
+                        <td>@item.Remarks</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No Qur'an progress records found.</div>
+}

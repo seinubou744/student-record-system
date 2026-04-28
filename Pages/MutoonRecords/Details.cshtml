@@ -1,0 +1,49 @@
+@page
+@model StudentRecordSystem.Pages_MutoonRecords.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>MutoonRecord</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MutoonRecord.Student)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MutoonRecord.Student.AdmissionNo)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MutoonRecord.MatnName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MutoonRecord.MatnName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MutoonRecord.Portion)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MutoonRecord.Portion)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MutoonRecord.RecordDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MutoonRecord.RecordDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MutoonRecord.Remarks)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MutoonRecord.Remarks)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.MutoonRecord.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

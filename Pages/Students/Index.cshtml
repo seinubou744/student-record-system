@@ -1,0 +1,65 @@
+@page
+@model StudentRecordSystem.Pages_Students.IndexModel
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<h1>Students</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<p>
+    <a asp-page="./Create" class="btn btn-primary">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Admission No</th>
+            <th>Full Name</th>
+            <th>Class Room</th>
+            <th>Login Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Student)
+{
+        <tr>
+            <td>@item.AdmissionNo</td>
+            <td>@item.FullName</td>
+            <td>@item.ClassRoom?.Name</td>
+            <td>
+                @if (string.IsNullOrEmpty(item.ApplicationUserId))
+                {
+                    <span class="text-danger">Not Created</span>
+                }
+                else
+                {
+                    <span class="text-success">Created</span>
+                }
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
+
+                @if (string.IsNullOrEmpty(item.ApplicationUserId))
+                {
+                    <a asp-page="./GenerateLogin" asp-route-id="@item.Id">Create Login</a>
+                }
+                else
+                {
+                    <span class="text-muted">Login Exists</span>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

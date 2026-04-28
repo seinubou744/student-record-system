@@ -1,0 +1,69 @@
+@page
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize(Roles = "Admin")]
+@model StudentRecordSystem.Pages_QuranRecords.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].Student)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].SurahName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].FromAyah)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].ToAyah)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].RecordDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuranRecord[0].Remarks)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.QuranRecord) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.AdmissionNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SurahName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FromAyah)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToAyah)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecordDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remarks)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

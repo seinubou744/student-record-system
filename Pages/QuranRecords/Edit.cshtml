@@ -1,0 +1,62 @@
+@page
+@model StudentRecordSystem.Pages_QuranRecords.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>QuranRecord</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="QuranRecord.Id" />
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="QuranRecord.StudentId" class="control-label"></label>
+                <select asp-for="QuranRecord.StudentId" class="form-control" asp-items="ViewBag.StudentId" aria-required="true"></select>
+                <span asp-validation-for="QuranRecord.StudentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="QuranRecord.SurahName" class="control-label"></label>
+                <input asp-for="QuranRecord.SurahName" class="form-control" aria-required="true"/>
+                <span asp-validation-for="QuranRecord.SurahName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuranRecord.FromAyah" class="control-label"></label>
+                <input asp-for="QuranRecord.FromAyah" class="form-control" />
+                <span asp-validation-for="QuranRecord.FromAyah" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuranRecord.ToAyah" class="control-label"></label>
+                <input asp-for="QuranRecord.ToAyah" class="form-control" />
+                <span asp-validation-for="QuranRecord.ToAyah" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuranRecord.RecordDate" class="control-label"></label>
+                <input asp-for="QuranRecord.RecordDate" class="form-control" />
+                <span asp-validation-for="QuranRecord.RecordDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuranRecord.Remarks" class="control-label"></label>
+                <input asp-for="QuranRecord.Remarks" class="form-control" />
+                <span asp-validation-for="QuranRecord.Remarks" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,139 @@
+@page
+@model StudentRecordSystem.Pages.TeacherPortal.TestsModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "Student Tests";
+}
+
+<h1 class="mb-3">Student Tests</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.DebugMessage))
+{
+    <div class="alert alert-info">@Model.DebugMessage</div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Class</label>
+        <select asp-for="ClassRoomId" asp-items="Model.TeacherClasses" class="form-select">
+            <option value="">-- Select Class --</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Test Type</label>
+        <select asp-for="TestType" class="form-select" onchange="this.form.submit()">
+            <option value="@LearningRecordType.Quran">Qur'an</option>
+            <option value="@LearningRecordType.Mutoon">Mutoon</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="TestDate" class="form-label">Test Date</label>
+        <input asp-for="TestDate" type="date" class="form-control" value="@Model.TestDate.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary w-100">Load</button>
+    </div>
+</form>
+
+<form method="post">
+    <input type="hidden" asp-for="ClassRoomId" />
+    <input type="hidden" asp-for="TestType" />
+    <input type="hidden" asp-for="TestDate" />
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+
+                    @if (Model.TestType == LearningRecordType.Quran)
+                    {
+                        <th>Surah</th>
+                        <th>From Ayah</th>
+                        <th>To Ayah</th>
+                    }
+                    else
+                    {
+                        <th>Portion</th>
+                    }
+
+                    <th>Marks</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.Items[i].StudentCode
+                            <input type="hidden" asp-for="Items[i].StudentId" />
+                            <input type="hidden" asp-for="Items[i].StudentCode" />
+                            <input type="hidden" asp-for="Items[i].StudentName" />
+                            <input type="hidden" asp-for="Items[i].ClassRoomId" />
+                        </td>
+
+                        <td>@Model.Items[i].StudentName</td>
+
+                        @if (Model.TestType == LearningRecordType.Quran)
+                        {
+                            <td>
+                                <select asp-for="Items[i].SurahName" asp-items="Model.SurahOptions" class="form-select">
+                                    <option value="">-- Select Surah --</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select asp-for="Items[i].FromAyah" class="form-select">
+                                    <option value="">-- From --</option>
+                                    @for (int ayah = 1; ayah <= 286; ayah++)
+                                    {
+                                        <option value="@ayah">@ayah</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <select asp-for="Items[i].ToAyah" class="form-select">
+                                    <option value="">-- To --</option>
+                                    @for (int ayah = 1; ayah <= 286; ayah++)
+                                    {
+                                        <option value="@ayah">@ayah</option>
+                                    }
+                                </select>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <input asp-for="Items[i].Portion" class="form-control" placeholder="Enter Mutoon portion" />
+                            </td>
+                        }
+
+                        <td>
+                            <input asp-for="Items[i].Marks" class="form-control" type="number" step="0.01" min="0" />
+                        </td>
+
+                        <td>
+                            <input asp-for="Items[i].Remarks" class="form-control" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Items.Any())
+    {
+        <button type="submit" class="btn btn-primary">Save Test Records</button>
+    }
+</form>

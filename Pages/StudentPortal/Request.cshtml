@@ -1,0 +1,219 @@
+@page
+@model StudentRecordSystem.Pages.StudentPortal.RequestsModel
+@{
+    ViewData["Title"] = "My Requests";
+}
+
+<div class="requests-hero mb-4">
+    <div>
+        <p class="requests-eyebrow mb-2">Student Portal</p>
+        <h1 class="requests-title mb-2">My Requests</h1>
+        <p class="requests-text mb-0">
+            View incoming requests from other students and track the requests you have sent.
+        </p>
+    </div>
+</div>
+
+<div class="mb-4">
+    <a asp-page="/StudentPortal/Match" class="btn btn-outline-primary">Back to Match Page</a>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="alert alert-success shadow-sm">@Model.SuccessMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger shadow-sm">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+                <h3 class="section-title mb-3">Incoming Requests</h3>
+
+                @if (Model.IncomingRequests.Any())
+                {
+                    <div class="request-list">
+                        @foreach (var item in Model.IncomingRequests)
+                        {
+                            <div class="request-card">
+                                <h5 class="mb-1">@item.OtherStudentName</h5>
+                                <p class="text-muted mb-1">Class: @item.OtherStudentClassRoom</p>
+                                <p class="mb-1">Type: <strong>@item.RequestType</strong></p>
+                                <p class="mb-1">
+                                    Status:
+                                    <span class="status-badge @item.Status.ToLower()">@item.Status</span>
+                                </p>
+                                <p class="text-muted mb-2">@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")</p>
+
+                                @if (!string.IsNullOrWhiteSpace(item.Message))
+                                {
+                                    <div class="message-box mb-3">
+                                        @item.Message
+                                    </div>
+                                }
+
+                                @if (item.Status == "Pending")
+                                {
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <form method="post" asp-page-handler="Accept">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                        </form>
+
+                                        <form method="post" asp-page-handler="Reject">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Reject</button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-box">No incoming requests found.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+                <h3 class="section-title mb-3">Sent Requests</h3>
+
+                @if (Model.SentRequests.Any())
+                {
+                    <div class="request-list">
+                        @foreach (var item in Model.SentRequests)
+                        {
+                            <div class="request-card">
+                                <h5 class="mb-1">@item.OtherStudentName</h5>
+                                <p class="text-muted mb-1">Class: @item.OtherStudentClassRoom</p>
+                                <p class="mb-1">Type: <strong>@item.RequestType</strong></p>
+                                <p class="mb-1">
+                                    Status:
+                                    <span class="status-badge @item.Status.ToLower()">@item.Status</span>
+                                </p>
+                                <p class="text-muted mb-2">@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")</p>
+
+                                @if (!string.IsNullOrWhiteSpace(item.Message))
+                                {
+                                    <div class="message-box">
+                                        @item.Message
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-box">No sent requests found.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .requests-hero {
+        background: linear-gradient(135deg, #0f172a, #2563eb);
+        color: white;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .requests-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        font-size: .85rem;
+        opacity: .8;
+    }
+
+    .requests-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+    }
+
+    .requests-text {
+        max-width: 760px;
+        color: rgba(255,255,255,.84);
+        font-size: 1.05rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .request-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .request-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 18px;
+        background: #f8fafc;
+    }
+
+    .message-box {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: #374151;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .85rem;
+        font-weight: 700;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-badge.accepted {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-badge.rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .empty-box {
+        border: 1px dashed #d1d5db;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        color: #6b7280;
+        background: #f9fafb;
+    }
+
+    @@media (max-width: 768px) {
+        .requests-title {
+            font-size: 1.8rem;
+        }
+
+        .requests-hero {
+            padding: 24px;
+        }
+    }
+</style>

@@ -1,0 +1,51 @@
+@page
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize(Roles = "Admin")]
+@model StudentRecordSystem.Pages_Students.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Student</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Student.Id" />
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Student.AdmissionNo" class="control-label"></label>
+                <input asp-for="Student.AdmissionNo" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Student.AdmissionNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Student.FullName" class="control-label"></label>
+                <input asp-for="Student.FullName" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Student.FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Student.ClassRoomId" class="control-label"></label>
+                <select asp-for="Student.ClassRoomId" class="form-control" asp-items="ViewBag.ClassRoomId" aria-required="true"></select>
+                <span asp-validation-for="Student.ClassRoomId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

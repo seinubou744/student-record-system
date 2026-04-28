@@ -1,0 +1,117 @@
+@page
+@model StudentRecordSystem.Pages.TeacherPortal.ProgressModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "Qur'an & Mutoon Records";
+}
+
+<h1 class="mb-3">Qur'an & Mutoon Records</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Class</label>
+        <select asp-for="ClassRoomId" asp-items="Model.TeacherClasses" class="form-select">
+            <option value="">-- Select Class --</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Record Type</label>
+        <select asp-for="RecordType" class="form-select">
+            <option value="@LearningRecordType.Quran">Qur'an</option>
+            <option value="@LearningRecordType.Mutoon">Mutoon</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="RecordDate" class="form-label">Record Date</label>
+        <input asp-for="RecordDate" type="date" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary w-100">Load</button>
+    </div>
+</form>
+
+<form method="post">
+    <input type="hidden" asp-for="ClassRoomId" />
+    <input type="hidden" asp-for="RecordType" />
+    <input type="hidden" asp-for="RecordDate" />
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+
+                    @if (Model.RecordType == LearningRecordType.Quran)
+                    {
+                        <th>Surah</th>
+                        <th>From Ayah</th>
+                        <th>To Ayah</th>
+                    }
+                    else
+                    {
+                        <th>Portion</th>
+                    }
+
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.Items[i].StudentCode
+                            <input type="hidden" asp-for="Items[i].StudentId" />
+                            <input type="hidden" asp-for="Items[i].StudentCode" />
+                            <input type="hidden" asp-for="Items[i].StudentName" />
+                            <input type="hidden" asp-for="Items[i].ClassRoomId" />
+                        </td>
+                        <td>@Model.Items[i].StudentName</td>
+
+                        @if (Model.RecordType == LearningRecordType.Quran)
+                        {
+                            <td>
+                                <select asp-for="Items[i].SurahName" asp-items="Model.SurahOptions" class="form-select">
+                                    <option value="">-- Select Surah --</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input asp-for="Items[i].FromAyah" class="form-control" type="number" min="1" />
+                            </td>
+                            <td>
+                                <input asp-for="Items[i].ToAyah" class="form-control" type="number" min="1" />
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <input asp-for="Items[i].Portion" class="form-control" />
+                            </td>
+                        }
+
+                        <td>
+                            <input asp-for="Items[i].Remarks" class="form-control" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Items.Any())
+    {
+        <button type="submit" class="btn btn-primary">Save Records</button>
+    }
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

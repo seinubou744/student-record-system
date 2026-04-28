@@ -1,0 +1,59 @@
+@page
+@model StudentRecordSystem.Pages.StudentPortal.TestDetailsModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "My Test Details";
+}
+
+<h1 class="mb-3">My Test Details</h1>
+
+@if (Model.TestRecords.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test Type</th>
+                    <th>Qur'an Details</th>
+                    <th>Mutoon Portion</th>
+                    <th>Marks</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.TestRecords)
+                {
+                    <tr>
+                        <td>@item.TestDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.TestType</td>
+                        <td>
+                            @if (item.TestType == LearningRecordType.Quran)
+                            {
+                                <span>
+                                    @item.SurahName
+                                    @if (item.FromAyah.HasValue && item.ToAyah.HasValue)
+                                    {
+                                        <text> (@item.FromAyah - @item.ToAyah)</text>
+                                    }
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.TestType == LearningRecordType.Mutoon)
+                            {
+                                @item.Portion
+                            }
+                        </td>
+                        <td>@item.Marks</td>
+                        <td>@item.Remarks</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No test records found.</div>
+}

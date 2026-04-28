@@ -1,0 +1,67 @@
+@page
+@model StudentRecordSystem.Pages_Students.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Student Details</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div>
+    <h4>Student</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Student.AdmissionNo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Student.AdmissionNo)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Student.FullName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Student.FullName)
+        </dd>
+
+        <dt class="col-sm-2">
+            Class Room
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Student.ClassRoom?.Name
+        </dd>
+
+        <dt class="col-sm-2">
+            Login Account
+        </dt>
+        <dd class="col-sm-10">
+            @if (!string.IsNullOrEmpty(Model.Student.ApplicationUserId))
+            {
+                <span class="text-success">Created</span>
+            }
+            else
+            {
+                <span class="text-danger">Not Created</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Student.Id" class="btn btn-primary">Edit</a>
+
+    @if (string.IsNullOrEmpty(Model.Student.ApplicationUserId))
+    {
+        <a asp-page="./CreateLogin" asp-route-id="@Model.Student.Id" class="btn btn-success">Create Login Account</a>
+    }
+
+    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+</div>

@@ -1,0 +1,37 @@
+@page
+@model StudentRecordSystem.Pages.StudentPortal.AttendanceModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "My Attendance";
+}
+
+<h1 class="mb-3">My Attendance</h1>
+
+@if (Model.AttendanceRecords.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AttendanceRecords)
+                {
+                    <tr>
+                        <td>@item.AttendanceDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.Status</td>
+                        <td>@item.Remarks</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No attendance records found.</div>
+}

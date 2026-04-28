@@ -1,0 +1,36 @@
+@page "{id:int}"
+@model StudentRecordSystem.Pages_Students.GenerateLoginModel
+
+@{
+    ViewData["Title"] = "Create Student Login";
+}
+
+<h1>Create Student Login</h1>
+
+<div class="card p-3">
+    <h4>Student Information</h4>
+    <hr />
+    <p><strong>Admission No:</strong> @Model.Student.AdmissionNo</p>
+    <p><strong>Full Name:</strong> @Model.Student.FullName</p>
+    <p><strong>Class Room:</strong> @Model.Student.ClassRoom?.Name</p>
+
+    @if (!string.IsNullOrEmpty(Model.Student.ApplicationUserId))
+    {
+        <div class="alert alert-info mt-3">
+            This student already has a login account.
+        </div>
+
+        <a asp-page="./Index" class="btn btn-secondary">Back to Students</a>
+    }
+    else
+    {
+        <div class="alert alert-warning mt-3">
+            This will automatically create a student email and temporary password.
+        </div>
+
+        <form method="post">
+            <button type="submit" class="btn btn-success">Generate Login Account</button>
+            <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    }
+</div>
