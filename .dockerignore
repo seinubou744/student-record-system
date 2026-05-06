@@ -1,0 +1,11 @@
+bin/
+obj/
+publish/
+.git/
+.vs/
+.vscode/
+*.user
+*.suo
+Dockerfile*
+docker-compose*
+README.md
