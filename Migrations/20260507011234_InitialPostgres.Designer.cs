@@ -12,7 +12,7 @@ using StudentRecordSystem.Data;
 namespace StudentRecordSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260505203016_InitialPostgres")]
+    [Migration("20260507011234_InitialPostgres")]
     partial class InitialPostgres
     {
         /// <inheritdoc />
