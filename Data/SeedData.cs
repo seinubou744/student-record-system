@@ -12,7 +12,15 @@ namespace StudentRecordSystem.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            await context.Database.MigrateAsync();
+            // await context.Database.MigrateAsync();
+            try
+            {
+                await context.Database.MigrateAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Migration skipped: {ex.Message}");
+            }
 
             string[] roles = { "Admin", "Student", "Teacher" };
 
