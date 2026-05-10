@@ -25,7 +25,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         public int? ClassRoomId { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public DateTime AttendanceDate { get; set; } = DateTime.Today;
+        public DateTime AttendanceDate { get; set; } = DateTime.UtcNow.Date;
 
         [BindProperty]
         public List<AttendanceInputModel> Items { get; set; } = new();
@@ -64,6 +64,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             {
                 ModelState.AddModelError(string.Empty, "Please select a class.");
                 DebugMessage = "POST failed: ClassRoomId is null.";
+                await LoadPageAsync();
                 return Page();
             }
 
@@ -84,8 +85,10 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return Page();
             }
 
+            var selectedDate = DateTime.SpecifyKind(AttendanceDate.Date, DateTimeKind.Utc);
+
             var existing = await _context.TeacherAttendances
-                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate.Date == AttendanceDate.Date)
+                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate == selectedDate)
                 .ToListAsync();
 
             if (existing.Any())
@@ -99,7 +102,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 {
                     StudentId = item.StudentId,
                     ClassRoomId = item.ClassRoomId,
-                    AttendanceDate = AttendanceDate.Date,
+                    AttendanceDate = selectedDate,
                     Status = item.Status,
                     Remarks = item.Remarks,
                     TeacherUserId = user.Id
@@ -108,7 +111,12 @@ namespace StudentRecordSystem.Pages.TeacherPortal
 
             await _context.SaveChangesAsync();
             SuccessMessage = "Attendance saved successfully.";
-            return RedirectToPage(new { ClassRoomId, AttendanceDate });
+
+            return RedirectToPage(new
+            {
+                ClassRoomId,
+                AttendanceDate = selectedDate.ToString("yyyy-MM-dd")
+            });
         }
 
         private async Task LoadPageAsync()
@@ -141,6 +149,8 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return;
             }
 
+            var selectedDate = DateTime.SpecifyKind(AttendanceDate.Date, DateTimeKind.Utc);
+
             Items = await _context.Students
                 .Where(s => s.ClassRoomId == ClassRoomId.Value)
                 .OrderBy(s => s.FullName)
@@ -160,7 +170,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             }
 
             var existing = await _context.TeacherAttendances
-                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate.Date == AttendanceDate.Date)
+                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate == selectedDate)
                 .ToListAsync();
 
             foreach (var item in Items)
@@ -179,7 +189,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         private async Task LoadTeacherClassesAsync(string teacherUserId)
         {
             TeacherClasses = await _context.TeacherClasses
-                .Where(tc => tc.TeacherUserId == teacherUserId)
+                .Where(tc => tc.TeacherUserId == teacherUserId && tc.ClassRoom != null)
                 .Include(tc => tc.ClassRoom)
                 .OrderBy(tc => tc.ClassRoom!.Name)
                 .Select(tc => new SelectListItem

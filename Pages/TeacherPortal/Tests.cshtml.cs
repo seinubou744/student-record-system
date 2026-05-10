@@ -28,7 +28,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         public LearningRecordType TestType { get; set; } = LearningRecordType.Quran;
 
         [BindProperty(SupportsGet = true)]
-        public DateTime TestDate { get; set; } = DateTime.Today;
+        public DateTime TestDate { get; set; } = DateTime.UtcNow.Date;
 
         [BindProperty]
         public List<TestInputModel> Items { get; set; } = new();
@@ -60,7 +60,6 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         public async Task<IActionResult> OnGetAsync()
         {
             LoadSurahOptions();
-
             await LoadPageAsync();
             return Page();
         }
@@ -168,12 +167,15 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             if (!ModelState.IsValid)
             {
                 DebugMessage = "POST failed: Validation errors exist.";
+                await LoadPageAsync();
                 return Page();
             }
 
+            var selectedDate = DateTime.SpecifyKind(TestDate.Date, DateTimeKind.Utc);
+
             var existing = await _context.StudentTestRecords
                 .Where(t => t.ClassRoomId == ClassRoomId.Value &&
-                            t.TestDate.Date == TestDate.Date &&
+                            t.TestDate == selectedDate &&
                             t.TestType == TestType)
                 .ToListAsync();
 
@@ -188,7 +190,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                         StudentId = item.StudentId,
                         ClassRoomId = item.ClassRoomId,
                         TestType = TestType,
-                        TestDate = TestDate.Date,
+                        TestDate = selectedDate,
                         SurahName = TestType == LearningRecordType.Quran ? item.SurahName : null,
                         FromAyah = TestType == LearningRecordType.Quran ? item.FromAyah : null,
                         ToAyah = TestType == LearningRecordType.Quran ? item.ToAyah : null,
@@ -207,12 +209,19 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     saved.Marks = item.Marks;
                     saved.Remarks = item.Remarks;
                     saved.TeacherUserId = user.Id;
+                    saved.TestDate = selectedDate;
                 }
             }
 
             await _context.SaveChangesAsync();
             SuccessMessage = $"{rowsToSave.Count} {TestType} test record(s) saved successfully.";
-            return RedirectToPage(new { ClassRoomId, TestType, TestDate });
+
+            return RedirectToPage(new
+            {
+                ClassRoomId,
+                TestType,
+                TestDate = selectedDate.ToString("yyyy-MM-dd")
+            });
         }
 
         private async Task LoadPageAsync()
@@ -224,6 +233,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return;
             }
 
+            LoadSurahOptions();
             await LoadTeacherClassesAsync(user.Id);
 
             if (!TeacherClasses.Any())
@@ -245,6 +255,8 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return;
             }
 
+            var selectedDate = DateTime.SpecifyKind(TestDate.Date, DateTimeKind.Utc);
+
             Items = await _context.Students
                 .Where(s => s.ClassRoomId == ClassRoomId.Value)
                 .OrderBy(s => s.FullName)
@@ -265,7 +277,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
 
             var existing = await _context.StudentTestRecords
                 .Where(t => t.ClassRoomId == ClassRoomId.Value &&
-                            t.TestDate.Date == TestDate.Date &&
+                            t.TestDate == selectedDate &&
                             t.TestType == TestType)
                 .ToListAsync();
 
@@ -289,7 +301,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         private async Task LoadTeacherClassesAsync(string teacherUserId)
         {
             TeacherClasses = await _context.TeacherClasses
-                .Where(tc => tc.TeacherUserId == teacherUserId)
+                .Where(tc => tc.TeacherUserId == teacherUserId && tc.ClassRoom != null)
                 .Include(tc => tc.ClassRoom)
                 .OrderBy(tc => tc.ClassRoom!.Name)
                 .Select(tc => new SelectListItem
