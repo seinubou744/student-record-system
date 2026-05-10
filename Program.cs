@@ -6,6 +6,8 @@ using Npgsql;
 using StudentRecordSystem.Data;
 using StudentRecordSystem.Models;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

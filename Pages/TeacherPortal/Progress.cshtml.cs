@@ -28,7 +28,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         public LearningRecordType RecordType { get; set; } = LearningRecordType.Quran;
 
         [BindProperty(SupportsGet = true)]
-        public DateTime RecordDate { get; set; } = DateTime.Today;
+        public DateTime RecordDate { get; set; } = DateTime.UtcNow.Date;
 
         [BindProperty]
         public List<ProgressInputModel> Items { get; set; } = new();
@@ -83,6 +83,8 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return Forbid();
             }
 
+            var selectedDate = DateTime.SpecifyKind(RecordDate.Date, DateTimeKind.Utc);
+
             if (RecordType == LearningRecordType.Quran)
             {
                 for (int i = 0; i < Items.Count; i++)
@@ -118,6 +120,18 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     }
                 }
             }
+            else if (RecordType == LearningRecordType.Mutoon)
+            {
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    var item = Items[i];
+
+                    if (string.IsNullOrWhiteSpace(item.Portion))
+                    {
+                        ModelState.AddModelError(string.Empty, $"Please enter Portion for {item.StudentName}.");
+                    }
+                }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -127,7 +141,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
 
             var existing = await _context.StudentLearningRecords
                 .Where(r => r.ClassRoomId == ClassRoomId.Value &&
-                            r.RecordDate.Date == RecordDate.Date &&
+                            r.RecordDate == selectedDate &&
                             r.RecordType == RecordType)
                 .ToListAsync();
 
@@ -143,7 +157,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     StudentId = item.StudentId,
                     ClassRoomId = item.ClassRoomId,
                     RecordType = RecordType,
-                    RecordDate = RecordDate.Date,
+                    RecordDate = selectedDate,
                     SurahName = RecordType == LearningRecordType.Quran ? item.SurahName : null,
                     FromAyah = RecordType == LearningRecordType.Quran ? item.FromAyah : null,
                     ToAyah = RecordType == LearningRecordType.Quran ? item.ToAyah : null,
@@ -156,7 +170,12 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             await _context.SaveChangesAsync();
 
             SuccessMessage = $"{RecordType} records saved successfully.";
-            return RedirectToPage(new { ClassRoomId, RecordType, RecordDate });
+            return RedirectToPage(new
+            {
+                ClassRoomId,
+                RecordType,
+                RecordDate = selectedDate.ToString("yyyy-MM-dd")
+            });
         }
 
         private async Task LoadPageAsync()
@@ -164,6 +183,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return;
 
+            LoadSurahOptions();
             await LoadTeacherClassesAsync(user.Id);
 
             if (ClassRoomId == null && TeacherClasses.Any())
@@ -172,6 +192,8 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             }
 
             if (ClassRoomId == null) return;
+
+            var selectedDate = DateTime.SpecifyKind(RecordDate.Date, DateTimeKind.Utc);
 
             Items = await _context.Students
                 .Where(s => s.ClassRoomId == ClassRoomId.Value)
@@ -187,7 +209,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
 
             var existing = await _context.StudentLearningRecords
                 .Where(r => r.ClassRoomId == ClassRoomId.Value &&
-                            r.RecordDate.Date == RecordDate.Date &&
+                            r.RecordDate == selectedDate &&
                             r.RecordType == RecordType)
                 .ToListAsync();
 
@@ -208,7 +230,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         private async Task LoadTeacherClassesAsync(string teacherUserId)
         {
             TeacherClasses = await _context.TeacherClasses
-                .Where(tc => tc.TeacherUserId == teacherUserId)
+                .Where(tc => tc.TeacherUserId == teacherUserId && tc.ClassRoom != null)
                 .Include(tc => tc.ClassRoom)
                 .OrderBy(tc => tc.ClassRoom!.Name)
                 .Select(tc => new SelectListItem
