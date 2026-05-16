@@ -38,7 +38,7 @@
             <p class="eyebrow mb-2">Shukur Quran Institute</p>
             <h1 class="hero-title mb-2">Student and Learning Management Portal</h1>
             <p class="hero-text mb-0">
-                A professional platform for managing learning records, attendance, tests, and student progress.
+                A secure and modern platform designed to support Qur'anic education, student development, academic excellence, and institutional administration.
             </p>
         }
     </div>
@@ -213,7 +213,7 @@ else if (isTeacher)
 }
 else if (isStudent)
 {
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
         <div class="col-md-6 col-xl-3">
             <div class="card stat-card border-0 h-100">
                 <div class="card-body">
@@ -258,32 +258,255 @@ else if (isStudent)
             </div>
         </div>
     </div>
+
+    <div class="card border-0">
+        <div class="card-body p-4">
+            <h3 class="section-title mb-3">Student Quick Access</h3>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a asp-page="/StudentPortal/Index" class="quick-action-card">
+                        <span class="quick-title">Student Portal</span>
+                        <span class="quick-text">Open your dashboard and portal overview.</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-page="/StudentPortal/Attendance" class="quick-action-card">
+                        <span class="quick-title">Attendance</span>
+                        <span class="quick-text">Review your daily attendance record.</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-page="/StudentPortal/QuranProgress" class="quick-action-card">
+                        <span class="quick-title">Qur'an Progress</span>
+                        <span class="quick-text">See your memorization and revision progress.</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-page="/StudentPortal/Match" class="quick-action-card">
+                        <span class="quick-title">Study Match</span>
+                        <span class="quick-text">Find a suitable study partner.</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
         <div class="col-lg-8">
-            <div class="card border-0 h-100">
-                <div class="card-body p-4">
-                    <h3 class="section-title mb-3">About the Portal</h3>
-                    <p class="stat-text mb-3">
-                        This platform helps Shukur Quran Institute manage attendance, learning progress, test records, and student support in one organized environment.
-                    </p>
-                    <p class="stat-text mb-0">
-                        Sign in with your account to access the correct portal for administration, teaching, or student learning.
-                    </p>
+            <div class="home-dual-card">
+                <div class="row g-0 h-100">
+                    <div class="col-lg-6">
+                        <div class="split-panel">
+                            <p class="home-panel-subtitle mb-2">English Panel</p>
+                            <h3 class="home-panel-heading">Welcome to Shukur Quran Institute</h3>
+                            <p class="home-widget-text">
+                                <span class="portal-intro-highlight">Student Record Management System</span> is a secure and modern platform designed to support Qur'anic education, student development, academic excellence, and institutional administration.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="split-panel arabic-panel">
+                            <p class="home-panel-subtitle mb-2">الواجهة العربية</p>
+                            <h3 class="home-panel-heading">مرحبًا بكم في معهد شكر لتحفيظ القرآن الكريم</h3>
+                            <p class="home-widget-text">
+                                <span class="portal-intro-highlight">نظام إدارة سجلات الطلاب</span> هو منصة حديثة وآمنة تهدف إلى دعم التعليم القرآني، وتنظيم بيانات الطلاب، ومتابعة الحفظ والمراجعة، وتعزيز التميز الأكاديمي والإدارة المؤسسية.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 h-100">
-                <div class="card-body p-4">
-                    <h3 class="section-title mb-3">Quick Access</h3>
-                    <div class="d-grid gap-3">
-                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">Login</a>
-                        <a asp-page="/Privacy" class="btn btn-outline-primary">Privacy</a>
+            <div class="card home-access-card border-0">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">Authorized Access</h3>
+                    <p class="home-widget-text mb-3">
+                        Access to this portal is limited to approved users. Please sign in using your assigned credentials.
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light">Login</a>
+                        <a asp-page="/Privacy" class="btn btn-outline-light">Privacy</a>
                     </div>
+
+                    <ul class="home-feature-list">
+                        <li><span class="home-feature-dot"></span><span>Role-based access for Admin, Teacher, and Student portals.</span></li>
+                        <li><span class="home-feature-dot"></span><span>Secure academic and learning record management.</span></li>
+                        <li><span class="home-feature-dot"></span><span>Bilingual presentation for English and Arabic users.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 home-info-card mb-4">
+        <div class="card-body">
+            <h3 class="section-title mb-3">Join Shukur Quran Institute</h3>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="quick-action-card h-100">
+                        <span class="quick-title">Quality Qur'anic Education</span>
+                        <span class="quick-text">Support strong memorization, revision, and guided learning.</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action-card h-100">
+                        <span class="quick-title">Islamic Character</span>
+                        <span class="quick-text">Promote discipline, good manners, and faith-centered development.</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action-card h-100">
+                        <span class="quick-title">Academic Monitoring</span>
+                        <span class="quick-text">Follow progress through reports, attendance, and structured records.</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action-card h-100">
+                        <span class="quick-title">Safe Environment</span>
+                        <span class="quick-text">Provide a secure and organized educational environment for all learners.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card home-quote-card border-0 h-100">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">Qur'anic Reminder</h3>
+                    <blockquote>
+                        <p>“My Lord! Increase me in knowledge.”</p>
+                        <footer>Surah Taha (20:114)</footer>
+                    </blockquote>
+                    <blockquote>
+                        <p>“Allah will elevate those of you who are faithful, and those gifted with knowledge in rank.”</p>
+                        <footer>Surah Al-Mujadila (58:11)</footer>
+                    </blockquote>
+                    <blockquote>
+                        <p>“The best among you are those who learn the Qur’an and teach it.”</p>
+                        <footer> Prophet Muhammad ﷺ (Sahih al-Bukhari)</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card home-quote-card border-0 h-100 arabic-panel">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">تذكير قرآني وهدي نبوي</h3>
+                    <blockquote dir="rtl">
+                        <p>﴿ وَقُل رَّبِّ زِدْنِي عِلْمًا ﴾</p>
+                        <footer>سورة طه: 114</footer>
+                    </blockquote>
+                    <blockquote dir="rtl">
+                        <p>﴿ يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ ﴾</p>
+                        <footer>سورة المجادلة: 11</footer>
+                    </blockquote>
+                    <blockquote dir="rtl">
+                        <p>«خيركم من تعلم القرآن وعلمه»</p>
+                        <footer>رواه البخاري</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card home-info-card border-0 h-100">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">Portal Services</h3>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">Student Records</div>
+                                <p class="guest-service-text">Manage student data, enrollment details, and institutional records efficiently.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">Learning Progress</div>
+                                <p class="guest-service-text">Track Qur'an memorization, Mutoon development, and educational performance.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">Teachers and Administration</div>
+                                <p class="guest-service-text">Support teachers, attendance workflows, assignments, and administrative oversight.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card home-info-card border-0 h-100 arabic-panel">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">خدمات النظام</h3>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">إدارة سجلات الطلاب</div>
+                                <p class="guest-service-text">تنظيم بيانات الطلاب، وبيانات القبول، والفصول، والسجلات المؤسسية بكفاءة عالية.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">متابعة الحفظ والتقدم</div>
+                                <p class="guest-service-text">متابعة حفظ القرآن، والمراجعة، وتطور المتون، والأداء التعليمي بشكل منظم.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="guest-service-card">
+                                <div class="guest-service-title">إدارة المعلمين والإدارة</div>
+                                <p class="guest-service-text">دعم المعلمين، وسير الحضور، وتوزيع المهام، والمتابعة الإدارية المستمرة.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-4">
+            <div class="home-info-card">
+                <div class="card-body">
+                    <div class="home-widget-icon">01</div>
+                    <h3 class="home-widget-title">Student Records Management</h3>
+                    <p class="home-widget-text">
+                        Organize and manage student profiles, admissions, class assignments, and academic records in one professional environment.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <div class="home-info-card">
+                <div class="card-body">
+                    <div class="home-widget-icon">02</div>
+                    <h3 class="home-widget-title">Qur'an Tracking</h3>
+                    <p class="home-widget-text">
+                        Monitor memorization, revision, progress remarks, and student learning development with accuracy and clarity.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-xl-4">
+            <div class="home-info-card">
+                <div class="card-body">
+                    <div class="home-widget-icon">03</div>
+                    <h3 class="home-widget-title">Attendance and Reports</h3>
+                    <p class="home-widget-text">
+                        Track attendance, support discipline, review performance reports, and strengthen institutional follow-up.
+                    </p>
                 </div>
             </div>
         </div>
