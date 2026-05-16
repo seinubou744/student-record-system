@@ -4,6 +4,7 @@
     ViewData["Title"] = "Dashboard";
     var isAdmin = User.IsInRole("Admin");
     var isStudent = User.IsInRole("Student");
+    var isTeacher = User.IsInRole("Teacher");
 }
 
 <div class="dashboard-hero mb-4">
@@ -11,23 +12,34 @@
         @if (isAdmin)
         {
             <p class="eyebrow mb-2">Administration</p>
-            <h1 class="hero-title mb-2">School Management Dashboard</h1>
+            <h1 class="hero-title mb-2">Shukur Quran Institute Dashboard</h1>
             <p class="hero-text mb-0">
-               Manage students, class rooms, subjects, teacher accounts, and teacher class assignments from one professional workspace.
+                Manage students, class rooms, subjects, teacher accounts, and teacher assignments from one professional workspace.
+            </p>
+        }
+        else if (isTeacher)
+        {
+            <p class="eyebrow mb-2">Teacher Portal</p>
+            <h1 class="hero-title mb-2">Teaching and Progress Dashboard</h1>
+            <p class="hero-text mb-0">
+                Record attendance, manage Qur'an and Mutoon progress, and update student test results from one organized portal.
             </p>
         }
         else if (isStudent)
         {
             <p class="eyebrow mb-2">Student Portal</p>
-            <h1 class="hero-title mb-2">Welcome to Your Dashboard</h1>
+            <h1 class="hero-title mb-2">Welcome to Shukur Quran Institute</h1>
             <p class="hero-text mb-0">
-                View your attendance, Quran progress, and Mutoon progress in one place.
+                View your attendance, Qur'an progress, Mutoon progress, and study support tools in one place.
             </p>
         }
         else
         {
-            <p class="eyebrow mb-2">Student Record System</p>
-            <h1 class="hero-title mb-2">Welcome</h1>
+            <p class="eyebrow mb-2">Shukur Quran Institute</p>
+            <h1 class="hero-title mb-2">Student and Learning Management Portal</h1>
+            <p class="hero-text mb-0">
+                A professional platform for managing learning records, attendance, tests, and student progress.
+            </p>
         }
     </div>
 
@@ -40,33 +52,33 @@
 {
     <div class="row g-4 mb-4">
         <div class="col-md-6 col-xl-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
                     <p class="stat-label">Students</p>
                     <h2 class="stat-value">@Model.TotalStudents</h2>
-                    <p class="stat-text">Registered student records.</p>
+                    <p class="stat-text">Registered student records in the institute.</p>
                     <a asp-page="/Students/Index" class="btn btn-primary w-100">Open Students</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
                     <p class="stat-label">Class Rooms</p>
                     <h2 class="stat-value">@Model.TotalClassRooms</h2>
-                    <p class="stat-text">Configured class rooms.</p>
+                    <p class="stat-text">Configured class rooms and teaching groups.</p>
                     <a asp-page="/ClassRooms/Index" class="btn btn-outline-primary w-100">Open Class Rooms</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
                     <p class="stat-label">Subjects</p>
                     <h2 class="stat-value">@Model.TotalSubjects</h2>
-                    <p class="stat-text">Subjects available in the system.</p>
+                    <p class="stat-text">Subjects and learning areas available in the system.</p>
                     <a asp-page="/Subjects/Index" class="btn btn-outline-primary w-100">Open Subjects</a>
                 </div>
             </div>
@@ -75,7 +87,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 h-100">
                 <div class="card-body p-4">
                     <h3 class="section-title mb-3">Quick Actions</h3>
                     <div class="row g-3">
@@ -112,7 +124,7 @@
                         <div class="col-md-4">
                             <a asp-page="/Admin/TeacherAttendance/Index" class="quick-action-card">
                                 <span class="quick-title">Teacher Attendance</span>
-                                <span class="quick-text">View and manage teacher attendance.</span>
+                                <span class="quick-text">View and manage teacher attendance records.</span>
                             </a>
                         </div>
                     </div>
@@ -121,7 +133,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 h-100">
                 <div class="card-body p-4">
                     <h3 class="section-title mb-3">Management</h3>
                     <div class="d-grid gap-3">
@@ -136,184 +148,144 @@
         </div>
     </div>
 }
+else if (isTeacher)
+{
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-4">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <p class="stat-label">Attendance</p>
+                    <h2 class="stat-value">Daily</h2>
+                    <p class="stat-text">Take and review class attendance for assigned students.</p>
+                    <a asp-page="/TeacherPortal/Attendance" class="btn btn-primary w-100">Open Attendance</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <p class="stat-label">Qur'an & Mutoon</p>
+                    <h2 class="stat-value">Records</h2>
+                    <p class="stat-text">Update learning progress and remarks for each student.</p>
+                    <a asp-page="/TeacherPortal/Progress" class="btn btn-outline-primary w-100">Open Progress</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <p class="stat-label">Tests</p>
+                    <h2 class="stat-value">Results</h2>
+                    <p class="stat-text">Enter and manage test results for Qur'an or Mutoon.</p>
+                    <a asp-page="/TeacherPortal/Tests" class="btn btn-outline-primary w-100">Open Tests</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0">
+        <div class="card-body p-4">
+            <h3 class="section-title mb-3">Teacher Quick Access</h3>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a asp-page="/TeacherPortal/Index" class="quick-action-card">
+                        <span class="quick-title">Teacher Portal</span>
+                        <span class="quick-text">Go to your teaching dashboard and overview.</span>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a asp-page="/TeacherPortal/Attendance" class="quick-action-card">
+                        <span class="quick-title">Take Attendance</span>
+                        <span class="quick-text">Mark student attendance by class and date.</span>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a asp-page="/TeacherPortal/Progress" class="quick-action-card">
+                        <span class="quick-title">Update Records</span>
+                        <span class="quick-text">Save Qur'an and Mutoon progress correctly.</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 else if (isStudent)
 {
     <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
                     <p class="stat-label">Attendance</p>
                     <h2 class="stat-value">My</h2>
-                    <p class="stat-text">View your attendance records.</p>
+                    <p class="stat-text">View your attendance records and daily presence.</p>
                     <a asp-page="/StudentPortal/Attendance" class="btn btn-primary w-100">Open Attendance</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
-                    <p class="stat-label">Quran</p>
+                    <p class="stat-label">Qur'an</p>
                     <h2 class="stat-value">My</h2>
-                    <p class="stat-text">View your Quran learning progress.</p>
-                    <a asp-page="/StudentPortal/QuranProgress" class="btn btn-success w-100">Open Quran Progress</a>
+                    <p class="stat-text">View your Qur'an memorization and learning progress.</p>
+                    <a asp-page="/StudentPortal/QuranProgress" class="btn btn-success w-100">Open Qur'an Progress</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card stat-card border-0 shadow-sm h-100">
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card border-0 h-100">
                 <div class="card-body">
                     <p class="stat-label">Mutoon</p>
                     <h2 class="stat-value">My</h2>
-                    <p class="stat-text">View your Mutoon learning progress.</p>
+                    <p class="stat-text">View your Mutoon progress and remarks.</p>
                     <a asp-page="/StudentPortal/MutoonProgress" class="btn btn-dark w-100">Open Mutoon Progress</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-    <div class="card stat-card border-0 shadow-sm h-100">
-        <div class="card-body">
-            <p class="stat-label">Matching</p>
-            <h2 class="stat-value">Peer</h2>
-            <p class="stat-text">Find another student with similar Quran or Mutoon progress.</p>
-            <a asp-page="/StudentPortal/Match" class="btn btn-warning w-100">Find Study Partner</a>
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card border-0 h-100">
+                <div class="card-body">
+                    <p class="stat-label">Matching</p>
+                    <h2 class="stat-value">Peer</h2>
+                    <p class="stat-text">Find another student with similar Qur'an or Mutoon progress.</p>
+                    <a asp-page="/StudentPortal/Match" class="btn btn-warning w-100">Find Study Partner</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 h-100">
+                <div class="card-body p-4">
+                    <h3 class="section-title mb-3">About the Portal</h3>
+                    <p class="stat-text mb-3">
+                        This platform helps Shukur Quran Institute manage attendance, learning progress, test records, and student support in one organized environment.
+                    </p>
+                    <p class="stat-text mb-0">
+                        Sign in with your account to access the correct portal for administration, teaching, or student learning.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 h-100">
+                <div class="card-body p-4">
+                    <h3 class="section-title mb-3">Quick Access</h3>
+                    <div class="d-grid gap-3">
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">Login</a>
+                        <a asp-page="/Privacy" class="btn btn-outline-primary">Privacy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
-
-<style>
-    .dashboard-hero {
-        background: linear-gradient(135deg, #0f172a, #1e3a8a);
-        color: #fff;
-        border-radius: 20px;
-        padding: 32px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        flex-wrap: wrap;
-        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
-    }
-
-    .eyebrow {
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.85rem;
-        opacity: 0.8;
-    }
-
-    .hero-title {
-        font-size: 2.3rem;
-        font-weight: 800;
-    }
-
-    .hero-text {
-        max-width: 720px;
-        color: rgba(255,255,255,0.82);
-        font-size: 1.05rem;
-    }
-
-    .hero-badge span {
-        background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(255,255,255,0.16);
-        padding: 10px 14px;
-        border-radius: 999px;
-        display: inline-block;
-        font-weight: 600;
-    }
-
-    .stat-card {
-        border-radius: 18px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 30px rgba(0,0,0,0.08);
-    }
-
-    .stat-label {
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        font-weight: 700;
-    }
-
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        color: #111827;
-    }
-
-    .stat-text {
-        color: #6b7280;
-        min-height: 48px;
-        margin-bottom: 18px;
-    }
-
-    .section-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .quick-action-card {
-        display: block;
-        text-decoration: none;
-        background: #f8fafc;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 18px;
-        height: 100%;
-        transition: all 0.2s ease;
-    }
-
-    .quick-action-card:hover {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-        transform: translateY(-3px);
-        text-decoration: none;
-    }
-
-    .quick-title {
-        display: block;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 6px;
-    }
-
-    .quick-text {
-        display: block;
-        color: #6b7280;
-        font-size: 0.95rem;
-    }
-
-    .dashboard-link {
-        border-radius: 14px;
-        padding: 14px 16px;
-        border: 1px solid #e5e7eb;
-        font-weight: 600;
-    }
-
-    .dashboard-link:hover {
-        background: #eef2ff;
-        border-color: #c7d2fe;
-    }
-
-    @@media (max-width: 768px) {
-        .hero-title {
-            font-size: 1.8rem;
-        }
-
-        .dashboard-hero {
-            padding: 24px;
-        }
-    }
-</style>

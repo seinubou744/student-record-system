@@ -3,13 +3,95 @@
     ViewData["Title"] = "Teacher Portal";
 }
 
-<div class="mb-4">
-    <h1>Teacher Portal</h1>
-    <p>Manage attendance, daily Qur'an and Mutoon records, and student tests.</p>
+<div class="dashboard-hero mb-4">
+    <div>
+        <p class="eyebrow mb-2">Teacher Portal</p>
+        <h1 class="hero-title mb-2">Teaching and Progress Dashboard</h1>
+        <p class="hero-text mb-0">
+            Manage attendance, daily Qur'an and Mutoon records, and student tests from one organized workspace at Shukur Quran Institute.
+        </p>
+    </div>
+
+    <div class="hero-badge">
+        <span>@DateTime.Now.ToString("dddd, dd MMM yyyy")</span>
+    </div>
 </div>
 
-<div class="d-flex gap-3 flex-wrap">
-    <a href="/TeacherPortal/Attendance" class="btn btn-primary">Take Attendance</a>
-    <a href="/TeacherPortal/Progress" class="btn btn-outline-primary">Qur'an & Mutoon Records</a>
-    <a href="/TeacherPortal/Tests" class="btn btn-outline-dark">Test Records</a>
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-4">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Attendance</p>
+                <h2 class="stat-value">Daily</h2>
+                <p class="stat-text">Take class attendance and keep daily student presence records up to date.</p>
+                <a asp-page="/TeacherPortal/Attendance" class="btn btn-primary w-100">Take Attendance</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Qur'an & Mutoon</p>
+                <h2 class="stat-value">Records</h2>
+                <p class="stat-text">Update learning progress, portions, ayat ranges, and teacher remarks.</p>
+                <a asp-page="/TeacherPortal/Progress" class="btn btn-outline-primary w-100">Open Records</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Tests</p>
+                <h2 class="stat-value">Results</h2>
+                <p class="stat-text">Enter and manage test records for Qur'an and Mutoon assessments.</p>
+                <a asp-page="/TeacherPortal/Tests" class="btn btn-outline-primary w-100">Open Tests</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="section-title mb-3">Quick Actions</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <a asp-page="/TeacherPortal/Attendance" class="quick-action-card">
+                            <span class="quick-title">Take Attendance</span>
+                            <span class="quick-text">Mark attendance by class and date.</span>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a asp-page="/TeacherPortal/Progress" class="quick-action-card">
+                            <span class="quick-title">Update Progress</span>
+                            <span class="quick-text">Save Qur'an and Mutoon learning records.</span>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a asp-page="/TeacherPortal/Tests" class="quick-action-card">
+                            <span class="quick-title">Record Tests</span>
+                            <span class="quick-text">Enter marks and remarks for students.</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="section-title mb-3">Teaching Workflow</h3>
+                <div class="d-grid gap-3">
+                    <div class="dashboard-link text-start">1. Select your class.</div>
+                    <div class="dashboard-link text-start">2. Mark attendance for the day.</div>
+                    <div class="dashboard-link text-start">3. Update Qur'an or Mutoon progress.</div>
+                    <div class="dashboard-link text-start">4. Save test results when needed.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

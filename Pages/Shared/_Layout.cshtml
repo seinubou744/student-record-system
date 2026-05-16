@@ -5,25 +5,31 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StudentRecordSystem</title>
+    <title>@ViewData["Title"] - Shukur Quran Institute</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentRecordSystem.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="app-body">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg app-navbar sticky-top">
             <div class="container">
-                <a class="navbar-brand fw-bold" asp-area="" asp-page="/Index">StudentRecordSystem</a>
+                <a class="navbar-brand app-brand" asp-area="" asp-page="/Index">
+                    <span class="brand-mark">SQI</span>
+                    <span class="brand-text-wrap">
+                        <span class="brand-text">Shukur Quran Institute</span>
+                        <small class="brand-subtext">Student & Learning Management Portal</small>
+                    </span>
+                </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                <button class="navbar-toggler app-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 app-nav-links">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
@@ -31,39 +37,39 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
-{
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/Students/Index">Students</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/ClassRooms/Index">Class Rooms</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/Subjects/Index">Subjects</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/Admin/TeacherAttendance/Index">Manage Teacher Attendance</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/Admin/CreateTeacher">Create Teacher Account</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-page="/Admin/AssignTeacherClasses">Assign Teacher Classes</a>
-    </li>
-}
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Students/Index">Students</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/ClassRooms/Index">Class Rooms</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Subjects/Index">Subjects</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Admin/TeacherAttendance/Index">Teacher Attendance</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Admin/CreateTeacher">Create Teacher</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Admin/AssignTeacherClasses">Assign Classes</a>
+                                </li>
+                            }
                             else if (User.IsInRole("Teacher"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/TeacherPortal/Index">Teacher Portal</a>
+                                    <a class="nav-link" asp-page="/TeacherPortal/Index">Teacher Portal</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/TeacherPortal/Attendance">Take Class Attendance</a>
+                                    <a class="nav-link" asp-page="/TeacherPortal/Attendance">Attendance</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/TeacherPortal/Progress">Qur'an &amp; Mutoon Records</a>
+                                    <a class="nav-link" asp-page="/TeacherPortal/Progress">Qur'an &amp; Mutoon</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/TeacherPortal/Tests">Test Records</a>
+                                    <a class="nav-link" asp-page="/TeacherPortal/Tests">Tests</a>
                                 </li>
                             }
                             else if (User.IsInRole("Student"))
@@ -78,43 +84,48 @@
                                     <a class="nav-link" asp-page="/StudentPortal/MutoonProgress">My Mutoon Progress</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/StudentPortal/TestDetails">My Test Details</a>
+                                    <a class="nav-link" asp-page="/StudentPortal/TestDetails">My Tests</a>
                                 </li>
                             }
                         }
                     </ul>
 
-                    <partial name="_LoginPartial" />
+                    <div class="d-flex align-items-center gap-2 flex-wrap app-top-actions">
+                        <form method="post" asp-page="/SetLanguage" class="d-flex align-items-center">
+                            <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
+                            <select name="culture" class="form-select form-select-sm language-select" onchange="this.form.submit()">
+                                @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar")
+                                {
+                                    <option value="ar" selected>العربية</option>
+                                    <option value="en">English</option>
+                                }
+                                else
+                                {
+                                    <option value="en" selected>English</option>
+                                    <option value="ar">العربية</option>
+                                }
+                            </select>
+                        </form>
+
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
-
-            <form method="post" asp-page="/SetLanguage" class="d-flex align-items-center ms-3">
-                <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
-                <select name="culture" class="form-select form-select-sm" onchange="this.form.submit()">
-                    @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar")
-                    {
-                        <option value="ar" selected>العربية</option>
-                        <option value="en">English</option>
-                    }
-                    else
-                    {
-                        <option value="en" selected>English</option>
-                        <option value="ar">العربية</option>
-                    }
-                </select>
-            </form>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="app-shell">
+        <main role="main" class="app-main container pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - StudentRecordSystem - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer class="app-footer">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div>&copy; 2026 - Shukur Quran Institute</div>
+            <div>
+                <a asp-area="" asp-page="/Privacy" class="footer-link">Privacy</a>
+            </div>
         </div>
     </footer>
 

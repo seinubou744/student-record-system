@@ -1,0 +1,96 @@
+@page
+@{
+    ViewData["Title"] = "Student Portal";
+}
+
+<div class="dashboard-hero mb-4">
+    <div>
+        <p class="eyebrow mb-2">Student Portal</p>
+        <h1 class="hero-title mb-2">Student Dashboard</h1>
+        <p class="hero-text mb-0">
+            Access your attendance, Qur'an progress, Mutoon progress, and study partner tools from one place at Shukur Quran Institute.
+        </p>
+    </div>
+
+    <div class="hero-badge">
+        <span>@DateTime.Now.ToString("dddd, dd MMM yyyy")</span>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Attendance</p>
+                <h2 class="stat-value">My</h2>
+                <p class="stat-text">Check your attendance history and daily record.</p>
+                <a asp-page="/StudentPortal/Attendance" class="btn btn-primary w-100">View Attendance</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Qur'an</p>
+                <h2 class="stat-value">My</h2>
+                <p class="stat-text">Review your Qur'an memorization and progress records.</p>
+                <a asp-page="/StudentPortal/QuranProgress" class="btn btn-success w-100">View Qur'an Progress</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Mutoon</p>
+                <h2 class="stat-value">My</h2>
+                <p class="stat-text">Review your Mutoon learning records and remarks.</p>
+                <a asp-page="/StudentPortal/MutoonProgress" class="btn btn-dark w-100">View Mutoon Progress</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 h-100">
+            <div class="card-body">
+                <p class="stat-label">Study Match</p>
+                <h2 class="stat-value">Find</h2>
+                <p class="stat-text">Find a student with similar Qur'an or Mutoon progress.</p>
+                <a asp-page="/StudentPortal/Match" class="btn btn-warning w-100">Find Study Partner</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-4">
+        <h3 class="section-title mb-3">Quick Access</h3>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a asp-page="/StudentPortal/Attendance" class="quick-action-card">
+                    <span class="quick-title">Attendance</span>
+                    <span class="quick-text">Open your attendance page.</span>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a asp-page="/StudentPortal/QuranProgress" class="quick-action-card">
+                    <span class="quick-title">Qur'an Progress</span>
+                    <span class="quick-text">See your Qur'an learning record.</span>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a asp-page="/StudentPortal/MutoonProgress" class="quick-action-card">
+                    <span class="quick-title">Mutoon Progress</span>
+                    <span class="quick-text">See your Mutoon learning record.</span>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a asp-page="/StudentPortal/Match" class="quick-action-card">
+                    <span class="quick-title">Study Match</span>
+                    <span class="quick-text">Find a suitable study partner.</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
