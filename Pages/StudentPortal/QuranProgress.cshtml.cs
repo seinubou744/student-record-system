@@ -24,10 +24,17 @@ namespace StudentRecordSystem.Pages.StudentPortal
         public async Task OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user?.StudentId == null) return;
+            if (user == null)
+                return;
+
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            if (student == null)
+                return;
 
             QuranRecords = await _context.StudentLearningRecords
-                .Where(q => q.StudentId == user.StudentId.Value &&
+                .Where(q => q.StudentId == student.Id &&
                             q.RecordType == LearningRecordType.Quran)
                 .OrderByDescending(q => q.RecordDate)
                 .ToListAsync();

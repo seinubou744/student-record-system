@@ -34,21 +34,11 @@ namespace StudentRecordSystem.Pages.StudentPortal
             var studentId = await GetCurrentStudentIdAsync();
             if (studentId == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                ErrorMessage = "Student profile was not found for the logged-in account.";
+                return Page();
             }
 
-            var rawIncomingCount = await _context.PeerRequests
-                .AsNoTracking()
-                .CountAsync(r => r.ReceiverStudentId == studentId.Value);
-
-            var rawSentCount = await _context.PeerRequests
-                .AsNoTracking()
-                .CountAsync(r => r.SenderStudentId == studentId.Value);
-
             await LoadRequestsAsync(studentId.Value);
-
-           // SuccessMessage = $"StudentId={studentId.Value} | IncomingRaw={rawIncomingCount} | SentRaw={rawSentCount} | IncomingView={IncomingRequests.Count} | SentView={SentRequests.Count} | CurrentDir={Directory.GetCurrentDirectory()}";
-
             return Page();
         }
 
@@ -57,7 +47,8 @@ namespace StudentRecordSystem.Pages.StudentPortal
             var studentId = await GetCurrentStudentIdAsync();
             if (studentId == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                ErrorMessage = "Student profile was not found for the logged-in account.";
+                return RedirectToPage();
             }
 
             var request = await _context.PeerRequests
@@ -87,7 +78,8 @@ namespace StudentRecordSystem.Pages.StudentPortal
             var studentId = await GetCurrentStudentIdAsync();
             if (studentId == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                ErrorMessage = "Student profile was not found for the logged-in account.";
+                return RedirectToPage();
             }
 
             var request = await _context.PeerRequests
@@ -115,12 +107,16 @@ namespace StudentRecordSystem.Pages.StudentPortal
         private async Task<int?> GetCurrentStudentIdAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.StudentId == null)
+            if (user == null)
             {
                 return null;
             }
 
-            return user.StudentId.Value;
+            var student = await _context.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            return student?.Id;
         }
 
         private async Task LoadRequestsAsync(int studentId)

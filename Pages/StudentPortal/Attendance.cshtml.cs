@@ -24,10 +24,17 @@ namespace StudentRecordSystem.Pages.StudentPortal
         public async Task OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user?.StudentId == null) return;
+            if (user == null)
+                return;
+
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            if (student == null)
+                return;
 
             AttendanceRecords = await _context.TeacherAttendances
-                .Where(a => a.StudentId == user.StudentId.Value)
+                .Where(a => a.StudentId == student.Id)
                 .OrderByDescending(a => a.AttendanceDate)
                 .ToListAsync();
         }

@@ -24,10 +24,17 @@ namespace StudentRecordSystem.Pages.StudentPortal
         public async Task OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user?.StudentId == null) return;
+            if (user == null)
+                return;
+
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            if (student == null)
+                return;
 
             MutoonRecords = await _context.StudentLearningRecords
-                .Where(m => m.StudentId == user.StudentId.Value &&
+                .Where(m => m.StudentId == student.Id &&
                             m.RecordType == LearningRecordType.Mutoon)
                 .OrderByDescending(m => m.RecordDate)
                 .ToListAsync();

@@ -31,10 +31,11 @@ namespace StudentRecordSystem.Pages.StudentPortal
 
         [TempData]
         public string? ErrorMessage { get; set; }
+
         public Student? CurrentStudent { get; set; }
 
-        public QuranRecord? MyLatestQuran { get; set; }
-        public MutoonRecord? MyLatestMutoon { get; set; }
+        public StudentLearningRecord? MyLatestQuran { get; set; }
+        public StudentLearningRecord? MyLatestMutoon { get; set; }
 
         public List<QuranMatchViewModel> QuranMatches { get; set; } = new();
         public List<MutoonMatchViewModel> MutoonMatches { get; set; } = new();
@@ -42,41 +43,48 @@ namespace StudentRecordSystem.Pages.StudentPortal
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.StudentId == null)
+            if (user == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                return Challenge();
             }
-
-            var studentId = user.StudentId.Value;
 
             CurrentStudent = await _context.Students
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == studentId);
+                .Include(s => s.ClassRoom)
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
             if (CurrentStudent == null)
             {
+                ErrorMessage = "Student profile was not found for the logged-in account.";
                 return Page();
             }
 
-            MyLatestQuran = await _context.QuranRecords
+            var studentId = CurrentStudent.Id;
+
+            MyLatestQuran = await _context.StudentLearningRecords
                 .AsNoTracking()
-                .Where(q => q.StudentId == studentId)
-                .OrderByDescending(q => q.Id)
+                .Where(q => q.StudentId == studentId && q.RecordType == LearningRecordType.Quran)
+                .OrderByDescending(q => q.RecordDate)
+                .ThenByDescending(q => q.Id)
                 .FirstOrDefaultAsync();
 
-            MyLatestMutoon = await _context.MutoonRecords
+            MyLatestMutoon = await _context.StudentLearningRecords
                 .AsNoTracking()
-                .Where(m => m.StudentId == studentId)
-                .OrderByDescending(m => m.Id)
+                .Where(m => m.StudentId == studentId && m.RecordType == LearningRecordType.Mutoon)
+                .OrderByDescending(m => m.RecordDate)
+                .ThenByDescending(m => m.Id)
                 .FirstOrDefaultAsync();
 
-            if (MyLatestQuran != null)
+            if (MyLatestQuran != null && !string.IsNullOrWhiteSpace(MyLatestQuran.SurahName))
             {
-                var quranQuery = _context.QuranRecords
+                var quranQuery = _context.StudentLearningRecords
                     .AsNoTracking()
                     .Include(q => q.Student)
                     .ThenInclude(s => s.ClassRoom)
-                    .Where(q => q.StudentId != studentId && q.SurahName == MyLatestQuran.SurahName);
+                    .Where(q =>
+                        q.StudentId != studentId &&
+                        q.RecordType == LearningRecordType.Quran &&
+                        q.SurahName == MyLatestQuran.SurahName);
 
                 if (!string.IsNullOrWhiteSpace(SearchTerm))
                 {
@@ -93,10 +101,9 @@ namespace StudentRecordSystem.Pages.StudentPortal
                         StudentId = q.StudentId,
                         StudentName = q.Student?.FullName ?? "",
                         ClassRoomName = q.Student?.ClassRoom?.Name ?? "",
-                        SurahName = q.SurahName,
-                        PageNumber = q.PageNumber,
-                        FromAyah = q.FromAyah,
-                        ToAyah = q.ToAyah,
+                        SurahName = q.SurahName ?? "",
+                        FromAyah = q.FromAyah ?? 0,
+                        ToAyah = q.ToAyah ?? 0,
                         MatchScore = CalculateQuranMatchScore(MyLatestQuran, q),
                         MatchReason = BuildQuranMatchReason(MyLatestQuran, q)
                     })
@@ -105,13 +112,16 @@ namespace StudentRecordSystem.Pages.StudentPortal
                     .ToList();
             }
 
-            if (MyLatestMutoon != null)
+            if (MyLatestMutoon != null && !string.IsNullOrWhiteSpace(MyLatestMutoon.Portion))
             {
-                var mutoonQuery = _context.MutoonRecords
+                var mutoonQuery = _context.StudentLearningRecords
                     .AsNoTracking()
                     .Include(m => m.Student)
                     .ThenInclude(s => s.ClassRoom)
-                    .Where(m => m.StudentId != studentId && m.MatnName == MyLatestMutoon.MatnName);
+                    .Where(m =>
+                        m.StudentId != studentId &&
+                        m.RecordType == LearningRecordType.Mutoon &&
+                        m.Portion != null);
 
                 if (!string.IsNullOrWhiteSpace(SearchTerm))
                 {
@@ -129,11 +139,11 @@ namespace StudentRecordSystem.Pages.StudentPortal
                         StudentId = m.StudentId,
                         StudentName = m.Student?.FullName ?? "",
                         ClassRoomName = m.Student?.ClassRoom?.Name ?? "",
-                        MatnName = m.MatnName ?? "",
                         Portion = m.Portion ?? "",
                         MatchScore = CalculateMutoonMatchScore(MyLatestMutoon, m),
                         MatchReason = BuildMutoonMatchReason(MyLatestMutoon, m)
                     })
+                    .Where(x => x.MatchScore > 0)
                     .OrderByDescending(x => x.MatchScore)
                     .ThenBy(x => x.StudentName)
                     .ToList();
@@ -145,12 +155,22 @@ namespace StudentRecordSystem.Pages.StudentPortal
         public async Task<IActionResult> OnPostSendRequestAsync(int receiverStudentId, string requestType, string? searchTerm)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.StudentId == null)
+            if (user == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                return Challenge();
             }
 
-            var senderStudentId = user.StudentId.Value;
+            var currentStudent = await _context.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            if (currentStudent == null)
+            {
+                ErrorMessage = "Student profile was not found for the logged-in account.";
+                return RedirectToPage(new { SearchTerm = searchTerm });
+            }
+
+            var senderStudentId = currentStudent.Id;
 
             if (senderStudentId == receiverStudentId)
             {
@@ -216,89 +236,86 @@ namespace StudentRecordSystem.Pages.StudentPortal
             return RedirectToPage(new { SearchTerm = searchTerm });
         }
 
-        private static int CalculateQuranMatchScore(QuranRecord mine, QuranRecord other)
+        private static int CalculateQuranMatchScore(StudentLearningRecord mine, StudentLearningRecord other)
         {
             var score = 0;
 
-            if (mine.SurahName == other.SurahName)
+            if (!string.IsNullOrWhiteSpace(mine.SurahName) &&
+                mine.SurahName == other.SurahName)
+            {
                 score += 70;
+            }
 
-            var pageDifference = Math.Abs(mine.PageNumber - other.PageNumber);
-            if (pageDifference == 0)
-                score += 20;
-            else if (pageDifference <= 1)
-                score += 15;
-            else if (pageDifference <= 3)
-                score += 10;
-            else if (pageDifference <= 5)
-                score += 5;
+            if (mine.FromAyah.HasValue && other.ToAyah.HasValue)
+            {
+                var ayahDifference = Math.Abs(mine.FromAyah.Value - other.ToAyah.Value);
 
-            var ayahDifference = Math.Abs(mine.FromAyah - other.ToAyah);
-            if (ayahDifference == 0)
-                score += 10;
-            else if (ayahDifference <= 2)
-                score += 7;
-            else if (ayahDifference <= 5)
-                score += 4;
+                if (ayahDifference == 0)
+                    score += 20;
+                else if (ayahDifference <= 2)
+                    score += 15;
+                else if (ayahDifference <= 5)
+                    score += 10;
+                else if (ayahDifference <= 10)
+                    score += 5;
+            }
 
             return score;
         }
 
-        private static int CalculateMutoonMatchScore(MutoonRecord mine, MutoonRecord other)
+        private static int CalculateMutoonMatchScore(StudentLearningRecord mine, StudentLearningRecord other)
         {
             var score = 0;
-
-            if (!string.IsNullOrWhiteSpace(mine.MatnName) &&
-                mine.MatnName == other.MatnName)
-            {
-                score += 80;
-            }
 
             if (!string.IsNullOrWhiteSpace(mine.Portion) &&
                 !string.IsNullOrWhiteSpace(other.Portion))
             {
                 if (mine.Portion.Trim().Equals(other.Portion.Trim(), StringComparison.OrdinalIgnoreCase))
                 {
-                    score += 20;
+                    score += 100;
                 }
                 else if (other.Portion.Contains(mine.Portion, StringComparison.OrdinalIgnoreCase) ||
                          mine.Portion.Contains(other.Portion, StringComparison.OrdinalIgnoreCase))
                 {
-                    score += 10;
+                    score += 60;
                 }
             }
 
             return score;
         }
 
-        private static string BuildQuranMatchReason(QuranRecord mine, QuranRecord other)
+        private static string BuildQuranMatchReason(StudentLearningRecord mine, StudentLearningRecord other)
         {
-            if (mine.SurahName == other.SurahName && mine.PageNumber == other.PageNumber && mine.FromAyah == other.ToAyah)
-                return "Same surah, same page, and same ayah.";
+            if (!string.IsNullOrWhiteSpace(mine.SurahName) &&
+                mine.SurahName == other.SurahName)
+            {
+                if (mine.FromAyah.HasValue && other.ToAyah.HasValue &&
+                    mine.FromAyah.Value == other.ToAyah.Value)
+                {
+                    return "Same surah and very close ayah progress.";
+                }
 
-            if (mine.SurahName == other.SurahName && mine.PageNumber == other.PageNumber)
-                return "Same surah and same page.";
-
-            if (mine.SurahName == other.SurahName)
-                return "Same surah with close progress.";
+                return "Same surah with close Quran progress.";
+            }
 
             return "General Quran match.";
         }
 
-        private static string BuildMutoonMatchReason(MutoonRecord mine, MutoonRecord other)
+        private static string BuildMutoonMatchReason(StudentLearningRecord mine, StudentLearningRecord other)
         {
-            if (!string.IsNullOrWhiteSpace(mine.MatnName) &&
-                mine.MatnName == other.MatnName &&
-                !string.IsNullOrWhiteSpace(mine.Portion) &&
-                mine.Portion.Trim().Equals(other.Portion?.Trim(), StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(mine.Portion) &&
+                !string.IsNullOrWhiteSpace(other.Portion))
             {
-                return "Same matn and same portion.";
-            }
+                if (mine.Portion.Trim().Equals(other.Portion.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Same Mutoon portion.";
+                }
 
-            if (!string.IsNullOrWhiteSpace(mine.MatnName) &&
-                mine.MatnName == other.MatnName)
-            {
-                return "Same matn with close text progress.";
+                if (other.Portion.Contains(mine.Portion, StringComparison.OrdinalIgnoreCase) ||
+                    mine.Portion.Contains(other.Portion, StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Very similar Mutoon portion.";
+                }
             }
 
             return "General Mutoon match.";
@@ -310,7 +327,6 @@ namespace StudentRecordSystem.Pages.StudentPortal
             public string StudentName { get; set; } = "";
             public string ClassRoomName { get; set; } = "";
             public string SurahName { get; set; } = "";
-            public int PageNumber { get; set; }
             public int FromAyah { get; set; }
             public int ToAyah { get; set; }
             public int MatchScore { get; set; }
@@ -322,7 +338,6 @@ namespace StudentRecordSystem.Pages.StudentPortal
             public int StudentId { get; set; }
             public string StudentName { get; set; } = "";
             public string ClassRoomName { get; set; } = "";
-            public string MatnName { get; set; } = "";
             public string Portion { get; set; } = "";
             public int MatchScore { get; set; }
             public string MatchReason { get; set; } = "";
