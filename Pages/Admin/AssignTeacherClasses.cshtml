@@ -18,8 +18,17 @@
             <option value="">-- Select Teacher --</option>
         </select>
     </div>
-    <div class="col-md-3 d-flex align-items-end">
+    <div class="col-md-6 d-flex align-items-end gap-2 flex-wrap">
         <button type="submit" class="btn btn-outline-primary">Load Classes</button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.TeacherUserId))
+        {
+            <a asp-page="/Admin/ResetUserPassword"
+               asp-route-userId="@Model.TeacherUserId"
+               class="btn btn-warning">
+                Reset Teacher Password
+            </a>
+        }
     </div>
 </form>
 
@@ -29,9 +38,16 @@
         <input type="hidden" asp-for="TeacherUserId" />
 
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <strong>Class Assignments</strong>
+
+                <a asp-page="/Admin/ResetUserPassword"
+                   asp-route-userId="@Model.TeacherUserId"
+                   class="btn btn-sm btn-warning">
+                    Reset Password
+                </a>
             </div>
+
             <div class="card-body">
                 @if (Model.AvailableClasses.Any())
                 {

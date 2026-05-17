@@ -18,7 +18,7 @@
     <a asp-page="./Create" class="btn btn-primary">Create New</a>
 </p>
 
-<table class="table">
+<table class="table table-striped align-middle">
     <thead>
         <tr>
             <th>Admission No</th>
@@ -38,26 +38,34 @@
             <td>
                 @if (string.IsNullOrEmpty(item.ApplicationUserId))
                 {
-                    <span class="text-danger">Not Created</span>
+                    <span class="text-danger fw-semibold">Not Created</span>
                 }
                 else
                 {
-                    <span class="text-success">Created</span>
+                    <span class="text-success fw-semibold">Created</span>
                 }
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
 
-                @if (string.IsNullOrEmpty(item.ApplicationUserId))
-                {
-                    <a asp-page="./GenerateLogin" asp-route-id="@item.Id">Create Login</a>
-                }
-                else
-                {
-                    <span class="text-muted">Login Exists</span>
-                }
+                    @if (string.IsNullOrEmpty(item.ApplicationUserId))
+                    {
+                        <a asp-page="./GenerateLogin" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                            Create Login
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="/Admin/ResetUserPassword"
+                           asp-route-userId="@item.ApplicationUserId"
+                           class="btn btn-sm btn-warning">
+                            Reset Password
+                        </a>
+                    }
+                </div>
             </td>
         </tr>
 }

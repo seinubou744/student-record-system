@@ -1,49 +1,55 @@
 @page
-using Microsoft.AspNetCore.Authorization;
-
-[Authorize(Roles = "Admin")]
 @model StudentRecordSystem.Pages_Students.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Student";
 }
 
-<h1>Edit</h1>
+<h1>Edit Student</h1>
 
 <h4>Student</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
             <input type="hidden" asp-for="Student.Id" />
-            <div class="form-group">
-<span class="text-danger">*</span>
+            <input type="hidden" asp-for="Student.ApplicationUserId" />
+
+            <div class="form-group mb-3">
+                <span class="text-danger">*</span>
                 <label asp-for="Student.AdmissionNo" class="control-label"></label>
-                <input asp-for="Student.AdmissionNo" class="form-control" aria-required="true"/>
+                <input asp-for="Student.AdmissionNo" class="form-control" aria-required="true" />
                 <span asp-validation-for="Student.AdmissionNo" class="text-danger"></span>
+                <small class="form-text text-muted">
+                    This admission number is also the student's login username.
+                </small>
             </div>
-            <div class="form-group">
-<span class="text-danger">*</span>
+
+            <div class="form-group mb-3">
+                <span class="text-danger">*</span>
                 <label asp-for="Student.FullName" class="control-label"></label>
-                <input asp-for="Student.FullName" class="form-control" aria-required="true"/>
+                <input asp-for="Student.FullName" class="form-control" aria-required="true" />
                 <span asp-validation-for="Student.FullName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-<span class="text-danger">*</span>
+
+            <div class="form-group mb-3">
+                <span class="text-danger">*</span>
                 <label asp-for="Student.ClassRoomId" class="control-label"></label>
-                <select asp-for="Student.ClassRoomId" class="form-control" asp-items="ViewBag.ClassRoomId" aria-required="true"></select>
+                <select asp-for="Student.ClassRoomId" class="form-control" asp-items="ViewBag.ClassRoomId" aria-required="true">
+                    <option value="">-- Select Class Room --</option>
+                </select>
                 <span asp-validation-for="Student.ClassRoomId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-page="./Index" class="btn btn-secondary ms-2">Back to List</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

@@ -37,8 +37,8 @@ namespace StudentRecordSystem.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
-            public string Email { get; set; } = string.Empty;
+            [Display(Name = "Email or Admission Number")]
+            public string Login { get; set; } = string.Empty;
 
             [Required]
             [DataType(DataType.Password)]
@@ -74,8 +74,33 @@ namespace StudentRecordSystem.Areas.Identity.Pages.Account
                 return Page();
             }
 
+            var loginInput = Input.Login?.Trim();
+
+            if (string.IsNullOrWhiteSpace(loginInput))
+            {
+                ModelState.AddModelError(string.Empty, "Please enter your email or admission number.");
+                return Page();
+            }
+
+            ApplicationUser? user;
+
+            if (loginInput.Contains("@"))
+            {
+                user = await _userManager.FindByEmailAsync(loginInput);
+            }
+            else
+            {
+                user = await _userManager.FindByNameAsync(loginInput);
+            }
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return Page();
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
-                Input.Email,
+                user.UserName!,
                 Input.Password,
                 Input.RememberMe,
                 lockoutOnFailure: false);
@@ -84,21 +109,21 @@ namespace StudentRecordSystem.Areas.Identity.Pages.Account
             {
                 _logger.LogInformation("User logged in.");
 
-                var user = await _userManager.FindByEmailAsync(Input.Email);
+                var roles = await _userManager.GetRolesAsync(user);
 
-                if (user != null)
+                if (roles.Contains("Admin"))
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
+                    return RedirectToPage("/Students/Index");
+                }
 
-                    if (roles.Contains("Admin"))
-                    {
-                        return RedirectToPage("/Students/Index");
-                    }
+                if (roles.Contains("Student"))
+                {
+                    return RedirectToPage("/StudentPortal/Attendance");
+                }
 
-                    if (roles.Contains("Student"))
-                    {
-                        return RedirectToPage("/StudentPortal/Attendance");
-                    }
+                if (roles.Contains("Teacher"))
+                {
+                    return RedirectToPage("/TeacherPortal/Index");
                 }
 
                 return LocalRedirect(returnUrl);
@@ -106,7 +131,11 @@ namespace StudentRecordSystem.Areas.Identity.Pages.Account
 
             if (result.RequiresTwoFactor)
             {
-                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                return RedirectToPage("./LoginWith2fa", new
+                {
+                    ReturnUrl = returnUrl,
+                    RememberMe = Input.RememberMe
+                });
             }
 
             if (result.IsLockedOut)

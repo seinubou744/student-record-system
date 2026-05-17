@@ -34,6 +34,7 @@ namespace StudentRecordSystem.Pages.Admin
 
             [Required]
             [DataType(DataType.Password)]
+            [StringLength(100, MinimumLength = 6)]
             public string Password { get; set; } = string.Empty;
 
             [Required]
@@ -53,10 +54,32 @@ namespace StudentRecordSystem.Pages.Admin
                 return Page();
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(Input.Email);
-            if (existingUser != null)
+            Input.FullName = Input.FullName?.Trim() ?? string.Empty;
+            Input.Email = Input.Email?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(Input.FullName))
             {
-                ModelState.AddModelError(string.Empty, "A user with this email already exists.");
+                ModelState.AddModelError("Input.FullName", "Full name is required.");
+                return Page();
+            }
+
+            if (string.IsNullOrWhiteSpace(Input.Email))
+            {
+                ModelState.AddModelError("Input.Email", "Email is required.");
+                return Page();
+            }
+
+            var existingEmailUser = await _userManager.FindByEmailAsync(Input.Email);
+            if (existingEmailUser != null)
+            {
+                ModelState.AddModelError("Input.Email", "A user with this email already exists.");
+                return Page();
+            }
+
+            var existingUserName = await _userManager.FindByNameAsync(Input.Email);
+            if (existingUserName != null)
+            {
+                ModelState.AddModelError("Input.Email", "This email is already used as a login username.");
                 return Page();
             }
 
@@ -68,11 +91,11 @@ namespace StudentRecordSystem.Pages.Admin
                 EmailConfirmed = true
             };
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            var createResult = await _userManager.CreateAsync(user, Input.Password);
 
-            if (!result.Succeeded)
+            if (!createResult.Succeeded)
             {
-                foreach (var error in result.Errors)
+                foreach (var error in createResult.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
@@ -84,6 +107,8 @@ namespace StudentRecordSystem.Pages.Admin
 
             if (!roleResult.Succeeded)
             {
+                await _userManager.DeleteAsync(user);
+
                 foreach (var error in roleResult.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
