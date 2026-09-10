@@ -17,8 +17,8 @@ builder.Services.AddScoped<TimetableService>();
 builder.Services.AddControllers();
 
 var connectionString =
-    builder.Configuration["DATABASE_URL"];
-    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    builder.Configuration["DATABASE_URL"]
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
     
 
 if (string.IsNullOrWhiteSpace(connectionString))
