@@ -69,6 +69,63 @@ namespace StudentRecordSystem.Data
                     throw new Exception(string.Join("; ", addToRoleResult.Errors.Select(e => e.Description)));
                 }
             }
+
+            if (!context.Sections.Any())
+            {
+                var firstClass = await context.ClassRooms.OrderBy(c => c.Id).FirstOrDefaultAsync();
+                if (firstClass != null)
+                {
+                    context.Sections.AddRange(
+                        new Section { ClassRoomId = firstClass.Id, Name = "A", Description = "Morning Section" },
+                        new Section { ClassRoomId = firstClass.Id, Name = "B", Description = "Afternoon Section" }
+                    );
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.TimetableEntries.Any())
+            {
+                var firstClass = await context.ClassRooms.FirstOrDefaultAsync();
+                var firstSection = await context.Sections.FirstOrDefaultAsync();
+                var firstSubject = await context.Subjects.FirstOrDefaultAsync();
+                var firstTeacher = await userManager.GetUsersInRoleAsync("Teacher");
+
+                if (firstClass != null && firstSection != null && firstSubject != null && firstTeacher.Any())
+                {
+                    context.TimetableEntries.AddRange(
+                        new TimetableEntry
+                        {
+                            ClassRoomId = firstClass.Id,
+                            SectionId = firstSection.Id,
+                            SubjectId = firstSubject.Id,
+                            TeacherId = firstTeacher.First().Id,
+                            DayOfWeek = WeekDay.Sunday,
+                            StartTime = new TimeSpan(8, 0, 0),
+                            EndTime = new TimeSpan(9, 0, 0),
+                            RoomNumber = "R-101",
+                            AcademicYear = "2026-2027",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        },
+                        new TimetableEntry
+                        {
+                            ClassRoomId = firstClass.Id,
+                            SectionId = firstSection.Id,
+                            SubjectId = firstSubject.Id,
+                            TeacherId = firstTeacher.First().Id,
+                            DayOfWeek = WeekDay.Monday,
+                            StartTime = new TimeSpan(9, 0, 0),
+                            EndTime = new TimeSpan(10, 0, 0),
+                            RoomNumber = "R-102",
+                            AcademicYear = "2026-2027",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        }
+                    );
+
+                    await context.SaveChangesAsync();
+                }
+            }
         }
     }
 }

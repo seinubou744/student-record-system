@@ -13,11 +13,17 @@ namespace StudentRecordSystem.Models
         public LearningRecordType TestType { get; set; }
         public DateTime TestDate { get; set; }
 
-        public string? SurahName { get; set; }
+        // Quran range
+        public string? FromSurah { get; set; }
         public int? FromAyah { get; set; }
+        public string? ToSurah { get; set; }
         public int? ToAyah { get; set; }
 
-        public string? Portion { get; set; }
+        // Mutoon range
+        public string? MatnName { get; set; }
+        public string? FromPortion { get; set; }
+        public string? ToPortion { get; set; }
+
         public decimal Marks { get; set; }
         public string? Remarks { get; set; }
 

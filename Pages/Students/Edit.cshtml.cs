@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -46,19 +45,35 @@ namespace StudentRecordSystem.Pages_Students
             }
 
             Student = student;
-            LoadClassRooms(student.ClassRoomId);
+            LoadDropdowns();
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostLoadSectionsAsync()
+        {
+            var existingStudent = await _context.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == Student.Id);
+
+            if (existingStudent == null)
+            {
+                return NotFound();
+            }
+
+            Student.AdmissionNo ??= existingStudent.AdmissionNo;
+            Student.FullName ??= existingStudent.FullName;
+            Student.ApplicationUserId ??= existingStudent.ApplicationUserId;
+
+            LoadDropdowns();
+            ModelState.Clear();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            LoadClassRooms(Student.ClassRoomId);
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            LoadDropdowns();
 
             Student.AdmissionNo = Student.AdmissionNo?.Trim() ?? string.Empty;
             Student.FullName = Student.FullName?.Trim() ?? string.Empty;
@@ -66,12 +81,39 @@ namespace StudentRecordSystem.Pages_Students
             if (string.IsNullOrWhiteSpace(Student.AdmissionNo))
             {
                 ModelState.AddModelError("Student.AdmissionNo", "Admission number is required.");
-                return Page();
             }
 
             if (string.IsNullOrWhiteSpace(Student.FullName))
             {
                 ModelState.AddModelError("Student.FullName", "Student full name is required.");
+            }
+
+            if (Student.ClassRoomId <= 0)
+            {
+                ModelState.AddModelError("Student.ClassRoomId", "Class is required.");
+            }
+
+            if (Student.SectionId <=0 || Student.SectionId <= 0)
+            {
+                ModelState.AddModelError("Student.SectionId", "Section is required.");
+            }
+
+            if (Student.ClassRoomId > 0 && Student.SectionId > 0)
+            {
+                var validSection = await _context.Sections
+                    .AnyAsync(s => s.Id == Student.SectionId &&
+                                   s.ClassRoomId == Student.ClassRoomId);
+
+                if (!validSection)
+                {
+                    ModelState.AddModelError(
+                        "Student.SectionId",
+                        "Selected section does not belong to the selected class.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
                 return Page();
             }
 
@@ -95,6 +137,7 @@ namespace StudentRecordSystem.Pages_Students
             existingStudent.AdmissionNo = Student.AdmissionNo;
             existingStudent.FullName = Student.FullName;
             existingStudent.ClassRoomId = Student.ClassRoomId;
+            existingStudent.SectionId = Student.SectionId;
 
             if (!string.IsNullOrWhiteSpace(existingStudent.ApplicationUserId))
             {
@@ -147,13 +190,26 @@ namespace StudentRecordSystem.Pages_Students
             return RedirectToPage("./Index");
         }
 
-        private void LoadClassRooms(object? selectedClassRoom = null)
+        private void LoadDropdowns()
         {
             ViewData["ClassRoomId"] = new SelectList(
-                _context.ClassRooms.OrderBy(c => c.Name),
+                _context.ClassRooms.OrderBy(c => c.Name).ToList(),
                 "Id",
                 "Name",
-                selectedClassRoom);
+                Student?.ClassRoomId);
+
+            var sectionsQuery = _context.Sections.AsQueryable();
+
+            if (Student?.ClassRoomId > 0)
+            {
+                sectionsQuery = sectionsQuery.Where(s => s.ClassRoomId == Student.ClassRoomId);
+            }
+
+            ViewData["SectionId"] = new SelectList(
+                sectionsQuery.OrderBy(s => s.Name).ToList(),
+                "Id",
+                "Name",
+                Student?.SectionId);
         }
 
         private bool StudentExists(int id)

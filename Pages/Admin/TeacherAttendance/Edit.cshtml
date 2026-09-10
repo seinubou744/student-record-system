@@ -5,42 +5,73 @@
     ViewData["Title"] = "Edit Teacher Attendance";
 }
 
-<h1 class="mb-3">Edit Teacher Attendance</h1>
-
-<form method="post">
-    <input type="hidden" asp-for="TeacherAttendanceRecord.Id" />
-    <input type="hidden" asp-for="TeacherAttendanceRecord.TeacherUserId" />
-    <input type="hidden" asp-for="TeacherAttendanceRecord.CreatedAt" />
-
-    <div class="mb-3">
-        <label asp-for="TeacherAttendanceRecord.StudentId" class="form-label"></label>
-        <select asp-for="TeacherAttendanceRecord.StudentId" asp-items="Model.StudentList" class="form-select"></select>
+<div class="dashboard-hero mb-4">
+    <div>
+        <p class="eyebrow mb-2">Admin Panel</p>
+        <h1 class="hero-title mb-2">Edit Teacher Attendance</h1>
+        <p class="hero-text mb-0">
+            Update the student, class, attendance date, status, and remarks for this attendance record.
+        </p>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="TeacherAttendanceRecord.ClassRoomId" class="form-label"></label>
-        <select asp-for="TeacherAttendanceRecord.ClassRoomId" asp-items="Model.ClassList" class="form-select"></select>
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div asp-validation-summary="All" class="alert alert-danger border-0 shadow-sm mb-4"></div>
+
+        <form method="post">
+            <input type="hidden" asp-for="TeacherAttendanceRecord.Id" />
+            <input type="hidden" asp-for="TeacherAttendanceRecord.TeacherUserId" />
+            <input type="hidden" asp-for="TeacherAttendanceRecord.CreatedAt" />
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label asp-for="TeacherAttendanceRecord.StudentId" class="form-label fw-semibold">Student</label>
+                    <select asp-for="TeacherAttendanceRecord.StudentId" asp-items="Model.StudentList" class="form-select">
+                        <option value="">-- Select Student --</option>
+                    </select>
+                    <span asp-validation-for="TeacherAttendanceRecord.StudentId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TeacherAttendanceRecord.ClassRoomId" class="form-label fw-semibold">Class</label>
+                    <select asp-for="TeacherAttendanceRecord.ClassRoomId" asp-items="Model.ClassList" class="form-select">
+                        <option value="">-- Select Class --</option>
+                    </select>
+                    <span asp-validation-for="TeacherAttendanceRecord.ClassRoomId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TeacherAttendanceRecord.AttendanceDate" class="form-label fw-semibold">Attendance Date</label>
+                    <input asp-for="TeacherAttendanceRecord.AttendanceDate" type="date" class="form-control" />
+                    <span asp-validation-for="TeacherAttendanceRecord.AttendanceDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TeacherAttendanceRecord.Status" class="form-label fw-semibold">Status</label>
+                    <select asp-for="TeacherAttendanceRecord.Status" class="form-select">
+                        <option value="@AttendanceStatus.Present">Present</option>
+                        <option value="@AttendanceStatus.Absent">Absent</option>
+                        <option value="@AttendanceStatus.Late">Late</option>
+                    </select>
+                    <span asp-validation-for="TeacherAttendanceRecord.Status" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="TeacherAttendanceRecord.Remarks" class="form-label fw-semibold">Remarks</label>
+                    <textarea asp-for="TeacherAttendanceRecord.Remarks" class="form-control" rows="3" placeholder="Optional remarks"></textarea>
+                    <span asp-validation-for="TeacherAttendanceRecord.Remarks" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="TeacherAttendanceRecord.AttendanceDate" class="form-label"></label>
-        <input asp-for="TeacherAttendanceRecord.AttendanceDate" type="date" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="TeacherAttendanceRecord.Status" class="form-label"></label>
-        <select asp-for="TeacherAttendanceRecord.Status" class="form-select">
-            <option value="@AttendanceStatus.Present">Present</option>
-            <option value="@AttendanceStatus.Absent">Absent</option>
-            <option value="@AttendanceStatus.Late">Late</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="TeacherAttendanceRecord.Remarks" class="form-label"></label>
-        <input asp-for="TeacherAttendanceRecord.Remarks" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a asp-page="./Index" class="btn btn-outline-secondary">Back</a>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

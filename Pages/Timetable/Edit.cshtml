@@ -1,0 +1,88 @@
+@page "{id:int?}"
+@model StudentRecordSystem.Pages.Timetable.EditModel
+@{
+    ViewData["Title"] = "Edit Timetable Entry";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Edit Timetable Entry</h1>
+        <p class="text-muted mb-0">Update the selected schedule entry.</p>
+    </div>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="TimetableEntry.Id" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.ClassRoomId" class="form-label"></label>
+                    <select asp-for="TimetableEntry.ClassRoomId" asp-items="Model.ClassRooms" class="form-select"></select>
+                    <span asp-validation-for="TimetableEntry.ClassRoomId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.SectionId" class="form-label"></label>
+                    <select asp-for="TimetableEntry.SectionId" asp-items="Model.Sections" class="form-select"></select>
+                    <span asp-validation-for="TimetableEntry.SectionId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.SubjectId" class="form-label"></label>
+                    <select asp-for="TimetableEntry.SubjectId" asp-items="Model.Subjects" class="form-select"></select>
+                    <span asp-validation-for="TimetableEntry.SubjectId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.TeacherId" class="form-label"></label>
+                    <select asp-for="TimetableEntry.TeacherId" asp-items="Model.Teachers" class="form-select"></select>
+                    <span asp-validation-for="TimetableEntry.TeacherId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TimetableEntry.DayOfWeek" class="form-label"></label>
+                    <select asp-for="TimetableEntry.DayOfWeek" class="form-select" asp-items="Html.GetEnumSelectList<DayOfWeek>()"></select>
+                    <span asp-validation-for="TimetableEntry.DayOfWeek" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TimetableEntry.StartTime" class="form-label"></label>
+                    <input asp-for="TimetableEntry.StartTime" type="time" class="form-control" />
+                    <span asp-validation-for="TimetableEntry.StartTime" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TimetableEntry.EndTime" class="form-label"></label>
+                    <input asp-for="TimetableEntry.EndTime" type="time" class="form-control" />
+                    <span asp-validation-for="TimetableEntry.EndTime" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.RoomNumber" class="form-label"></label>
+                    <input asp-for="TimetableEntry.RoomNumber" class="form-control" />
+                    <span asp-validation-for="TimetableEntry.RoomNumber" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="TimetableEntry.AcademicYear" class="form-label"></label>
+                    <input asp-for="TimetableEntry.AcademicYear" class="form-control" />
+                    <span asp-validation-for="TimetableEntry.AcademicYear" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

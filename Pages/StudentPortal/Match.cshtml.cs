@@ -112,7 +112,10 @@ namespace StudentRecordSystem.Pages.StudentPortal
                     .ToList();
             }
 
-            if (MyLatestMutoon != null && !string.IsNullOrWhiteSpace(MyLatestMutoon.Portion))
+            if (MyLatestMutoon != null &&
+                (!string.IsNullOrWhiteSpace(MyLatestMutoon.MatnName) ||
+                 !string.IsNullOrWhiteSpace(MyLatestMutoon.FromPortion) ||
+                 !string.IsNullOrWhiteSpace(MyLatestMutoon.ToPortion)))
             {
                 var mutoonQuery = _context.StudentLearningRecords
                     .AsNoTracking()
@@ -121,7 +124,11 @@ namespace StudentRecordSystem.Pages.StudentPortal
                     .Where(m =>
                         m.StudentId != studentId &&
                         m.RecordType == LearningRecordType.Mutoon &&
-                        m.Portion != null);
+                        (
+                            m.MatnName != null ||
+                            m.FromPortion != null ||
+                            m.ToPortion != null
+                        ));
 
                 if (!string.IsNullOrWhiteSpace(SearchTerm))
                 {
@@ -139,7 +146,9 @@ namespace StudentRecordSystem.Pages.StudentPortal
                         StudentId = m.StudentId,
                         StudentName = m.Student?.FullName ?? "",
                         ClassRoomName = m.Student?.ClassRoom?.Name ?? "",
-                        Portion = m.Portion ?? "",
+                        MatnName = m.MatnName ?? "",
+                        FromPortion = m.FromPortion ?? "",
+                        ToPortion = m.ToPortion ?? "",
                         MatchScore = CalculateMutoonMatchScore(MyLatestMutoon, m),
                         MatchReason = BuildMutoonMatchReason(MyLatestMutoon, m)
                     })
@@ -267,18 +276,25 @@ namespace StudentRecordSystem.Pages.StudentPortal
         {
             var score = 0;
 
-            if (!string.IsNullOrWhiteSpace(mine.Portion) &&
-                !string.IsNullOrWhiteSpace(other.Portion))
+            if (!string.IsNullOrWhiteSpace(mine.MatnName) &&
+                !string.IsNullOrWhiteSpace(other.MatnName) &&
+                mine.MatnName.Trim().Equals(other.MatnName.Trim(), StringComparison.OrdinalIgnoreCase))
             {
-                if (mine.Portion.Trim().Equals(other.Portion.Trim(), StringComparison.OrdinalIgnoreCase))
-                {
-                    score += 100;
-                }
-                else if (other.Portion.Contains(mine.Portion, StringComparison.OrdinalIgnoreCase) ||
-                         mine.Portion.Contains(other.Portion, StringComparison.OrdinalIgnoreCase))
-                {
-                    score += 60;
-                }
+                score += 50;
+            }
+
+            if (!string.IsNullOrWhiteSpace(mine.FromPortion) &&
+                !string.IsNullOrWhiteSpace(other.FromPortion) &&
+                mine.FromPortion.Trim().Equals(other.FromPortion.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                score += 25;
+            }
+
+            if (!string.IsNullOrWhiteSpace(mine.ToPortion) &&
+                !string.IsNullOrWhiteSpace(other.ToPortion) &&
+                mine.ToPortion.Trim().Equals(other.ToPortion.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                score += 25;
             }
 
             return score;
@@ -303,19 +319,31 @@ namespace StudentRecordSystem.Pages.StudentPortal
 
         private static string BuildMutoonMatchReason(StudentLearningRecord mine, StudentLearningRecord other)
         {
-            if (!string.IsNullOrWhiteSpace(mine.Portion) &&
-                !string.IsNullOrWhiteSpace(other.Portion))
-            {
-                if (mine.Portion.Trim().Equals(other.Portion.Trim(), StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Same Mutoon portion.";
-                }
+            var sameMatn = !string.IsNullOrWhiteSpace(mine.MatnName) &&
+                           !string.IsNullOrWhiteSpace(other.MatnName) &&
+                           mine.MatnName.Trim().Equals(other.MatnName.Trim(), StringComparison.OrdinalIgnoreCase);
 
-                if (other.Portion.Contains(mine.Portion, StringComparison.OrdinalIgnoreCase) ||
-                    mine.Portion.Contains(other.Portion, StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Very similar Mutoon portion.";
-                }
+            var sameFrom = !string.IsNullOrWhiteSpace(mine.FromPortion) &&
+                           !string.IsNullOrWhiteSpace(other.FromPortion) &&
+                           mine.FromPortion.Trim().Equals(other.FromPortion.Trim(), StringComparison.OrdinalIgnoreCase);
+
+            var sameTo = !string.IsNullOrWhiteSpace(mine.ToPortion) &&
+                         !string.IsNullOrWhiteSpace(other.ToPortion) &&
+                         mine.ToPortion.Trim().Equals(other.ToPortion.Trim(), StringComparison.OrdinalIgnoreCase);
+
+            if (sameMatn && sameFrom && sameTo)
+            {
+                return "Same matn and same Mutoon portion range.";
+            }
+
+            if (sameMatn && (sameFrom || sameTo))
+            {
+                return "Same matn with very similar Mutoon progress.";
+            }
+
+            if (sameMatn)
+            {
+                return "Same matn.";
             }
 
             return "General Mutoon match.";
@@ -338,7 +366,9 @@ namespace StudentRecordSystem.Pages.StudentPortal
             public int StudentId { get; set; }
             public string StudentName { get; set; } = "";
             public string ClassRoomName { get; set; } = "";
-            public string Portion { get; set; } = "";
+            public string MatnName { get; set; } = "";
+            public string FromPortion { get; set; } = "";
+            public string ToPortion { get; set; } = "";
             public int MatchScore { get; set; }
             public string MatchReason { get; set; } = "";
         }

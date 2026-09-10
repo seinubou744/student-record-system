@@ -16,12 +16,14 @@ namespace StudentRecordSystem.Pages_Students
             _context = context;
         }
 
-        public IList<Student> Student { get; set; } = default!;
+        public IList<Student> Student { get; set; } = new List<Student>();
 
         public async Task OnGetAsync()
         {
             Student = await _context.Students
                 .Include(s => s.ClassRoom)
+                .Include(s => s.Section)
+                .OrderBy(s => s.FullName)
                 .ToListAsync();
         }
     }

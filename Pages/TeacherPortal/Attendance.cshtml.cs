@@ -27,17 +27,19 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         [BindProperty(SupportsGet = true)]
         public DateTime AttendanceDate { get; set; } = DateTime.UtcNow.Date;
 
-        [BindProperty]
-        public List<AttendanceInputModel> Items { get; set; } = new();
+        public List<AttendanceRowViewModel> Items { get; set; } = new();
 
         public List<SelectListItem> TeacherClasses { get; set; } = new();
 
         [TempData]
         public string? SuccessMessage { get; set; }
 
+        [TempData]
+        public string? ErrorMessage { get; set; }
+
         public string? DebugMessage { get; set; }
 
-        public class AttendanceInputModel
+        public class AttendanceRowViewModel
         {
             public int StudentId { get; set; }
             public string AdmissionNo { get; set; } = string.Empty;
@@ -53,68 +55,79 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostSaveStudentAsync(
+            int studentId,
+            int classRoomId,
+            DateTime attendanceDate,
+            AttendanceStatus status,
+            string? remarks)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) return Challenge();
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            ClassRoomId = classRoomId;
+            AttendanceDate = attendanceDate.Date;
 
             await LoadTeacherClassesAsync(user.Id);
 
-            if (ClassRoomId == null)
-            {
-                ModelState.AddModelError(string.Empty, "Please select a class.");
-                DebugMessage = "POST failed: ClassRoomId is null.";
-                await LoadPageAsync();
-                return Page();
-            }
-
             var allowed = await _context.TeacherClasses
-                .AnyAsync(tc => tc.TeacherUserId == user.Id && tc.ClassRoomId == ClassRoomId.Value);
+                .AnyAsync(tc => tc.TeacherUserId == user.Id && tc.ClassRoomId == classRoomId);
 
             if (!allowed)
             {
-                DebugMessage = $"POST failed: Teacher {user.Id} is not assigned to class {ClassRoomId.Value}.";
                 return Forbid();
             }
 
-            if (!Items.Any())
+            var student = await _context.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == studentId && s.ClassRoomId == classRoomId);
+
+            if (student == null)
             {
-                ModelState.AddModelError(string.Empty, "No students were loaded for this class.");
-                DebugMessage = $"POST failed: No Items were submitted for class {ClassRoomId.Value}.";
-                await LoadPageAsync();
-                return Page();
-            }
-
-            var selectedDate = DateTime.SpecifyKind(AttendanceDate.Date, DateTimeKind.Utc);
-
-            var existing = await _context.TeacherAttendances
-                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate == selectedDate)
-                .ToListAsync();
-
-            if (existing.Any())
-            {
-                _context.TeacherAttendances.RemoveRange(existing);
-            }
-
-            foreach (var item in Items)
-            {
-                _context.TeacherAttendances.Add(new TeacherAttendance
+                ErrorMessage = "Selected student was not found in this class.";
+                return RedirectToPage(new
                 {
-                    StudentId = item.StudentId,
-                    ClassRoomId = item.ClassRoomId,
-                    AttendanceDate = selectedDate,
-                    Status = item.Status,
-                    Remarks = item.Remarks,
-                    TeacherUserId = user.Id
+                    ClassRoomId = classRoomId,
+                    AttendanceDate = attendanceDate.ToString("yyyy-MM-dd")
                 });
             }
 
-            await _context.SaveChangesAsync();
-            SuccessMessage = "Attendance saved successfully.";
+            var selectedDate = attendanceDate.Date;
 
+            var existing = await _context.TeacherAttendances
+                .FirstOrDefaultAsync(a =>
+                    a.StudentId == studentId &&
+                    a.ClassRoomId == classRoomId &&
+                    a.AttendanceDate.Date == selectedDate);
+
+            if (existing == null)
+            {
+                _context.TeacherAttendances.Add(new TeacherAttendance
+                {
+                    StudentId = studentId,
+                    ClassRoomId = classRoomId,
+                    AttendanceDate = selectedDate,
+                    Status = status,
+                    Remarks = string.IsNullOrWhiteSpace(remarks) ? null : remarks.Trim(),
+                    TeacherUserId = user.Id
+                });
+            }
+            else
+            {
+                existing.Status = status;
+                existing.Remarks = string.IsNullOrWhiteSpace(remarks) ? null : remarks.Trim();
+                existing.TeacherUserId = user.Id;
+            }
+
+            await _context.SaveChangesAsync();
+
+            SuccessMessage = $"Attendance saved for {student.FullName}.";
             return RedirectToPage(new
             {
-                ClassRoomId,
+                ClassRoomId = classRoomId,
                 AttendanceDate = selectedDate.ToString("yyyy-MM-dd")
             });
         }
@@ -145,16 +158,17 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             if (!isAssigned)
             {
                 DebugMessage = $"Selected class {ClassRoomId.Value} is not in the teacher assigned classes list.";
-                Items = new List<AttendanceInputModel>();
+                Items = new List<AttendanceRowViewModel>();
                 return;
             }
 
-            var selectedDate = DateTime.SpecifyKind(AttendanceDate.Date, DateTimeKind.Utc);
+            var selectedDate = AttendanceDate.Date;
 
             Items = await _context.Students
+                .AsNoTracking()
                 .Where(s => s.ClassRoomId == ClassRoomId.Value)
                 .OrderBy(s => s.FullName)
-                .Select(s => new AttendanceInputModel
+                .Select(s => new AttendanceRowViewModel
                 {
                     StudentId = s.Id,
                     AdmissionNo = s.AdmissionNo,
@@ -170,7 +184,8 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             }
 
             var existing = await _context.TeacherAttendances
-                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate == selectedDate)
+                .AsNoTracking()
+                .Where(a => a.ClassRoomId == ClassRoomId.Value && a.AttendanceDate.Date == selectedDate)
                 .ToListAsync();
 
             foreach (var item in Items)

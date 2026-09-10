@@ -32,10 +32,26 @@
             <div class="form-group mb-3">
                 <span class="text-danger">*</span>
                 <label asp-for="Student.ClassRoomId" class="control-label"></label>
-                <select asp-for="Student.ClassRoomId" class="form-control" asp-items="ViewBag.ClassRoomId" aria-required="true">
+                <select asp-for="Student.ClassRoomId"
+                        class="form-control"
+                        asp-items="ViewBag.ClassRoomId"
+                        aria-required="true"
+                        onchange="document.getElementById('loadSectionsButton').click();">
                     <option value="">-- Select Class Room --</option>
                 </select>
                 <span asp-validation-for="Student.ClassRoomId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <span class="text-danger">*</span>
+                <label asp-for="Student.SectionId" class="control-label">Section</label>
+                <select asp-for="Student.SectionId"
+                        class="form-control"
+                        asp-items="ViewBag.SectionId"
+                        aria-required="true">
+                    <option value="">-- Select Section --</option>
+                </select>
+                <span asp-validation-for="Student.SectionId" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
@@ -51,6 +67,13 @@
                 <input asp-for="ConfirmPassword" type="password" class="form-control" aria-required="true" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
+
+            <button id="loadSectionsButton"
+                    type="submit"
+                    asp-page-handler="LoadSections"
+                    class="d-none"
+                    formnovalidate>
+            </button>
 
             <div class="form-group mt-3">
                 <input type="submit" value="Create Student" class="btn btn-primary" />

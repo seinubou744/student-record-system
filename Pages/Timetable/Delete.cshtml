@@ -1,0 +1,53 @@
+@page "{id:int?}"
+@model StudentRecordSystem.Pages.Timetable.DeleteModel
+@{
+    ViewData["Title"] = "Delete Timetable Entry";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Delete Timetable Entry</h1>
+        <p class="text-muted mb-0">Review the schedule entry before deleting it.</p>
+    </div>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="card shadow-sm border-danger">
+    <div class="card-body">
+        <div class="alert alert-warning">
+            Are you sure you want to delete this timetable entry?
+        </div>
+
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Class</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.ClassRoom?.Name</dd>
+
+            <dt class="col-sm-3">Section</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.Section?.Name</dd>
+
+            <dt class="col-sm-3">Subject</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.Subject?.Name</dd>
+
+            <dt class="col-sm-3">Teacher</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.Teacher?.FullName</dd>
+
+            <dt class="col-sm-3">Day</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.DayOfWeek</dd>
+
+            <dt class="col-sm-3">Time</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.StartTime.ToString(@"hh\:mm") - @Model.TimetableEntry.EndTime.ToString(@"hh\:mm")</dd>
+
+            <dt class="col-sm-3">Room</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.TimetableEntry.RoomNumber) ? "-" : Model.TimetableEntry.RoomNumber)</dd>
+
+            <dt class="col-sm-3">Academic Year</dt>
+            <dd class="col-sm-9">@Model.TimetableEntry.AcademicYear</dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="TimetableEntry.Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

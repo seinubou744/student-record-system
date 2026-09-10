@@ -24,6 +24,7 @@
             <th>Admission No</th>
             <th>Full Name</th>
             <th>Class Room</th>
+            <th>Section</th>
             <th>Login Status</th>
             <th>Actions</th>
         </tr>
@@ -34,7 +35,17 @@
         <tr>
             <td>@item.AdmissionNo</td>
             <td>@item.FullName</td>
-            <td>@item.ClassRoom?.Name</td>
+            <td>@(item.ClassRoom?.Name ?? "-")</td>
+            <td>
+                @if (item.Section is null)
+                {
+                    <span class="text-warning fw-semibold">Not Assigned</span>
+                }
+                else
+                {
+                    <span>@item.Section.Name</span>
+                }
+            </td>
             <td>
                 @if (string.IsNullOrEmpty(item.ApplicationUserId))
                 {

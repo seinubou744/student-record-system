@@ -10,7 +10,7 @@
         <p class="eyebrow mb-2">Teacher Portal</p>
         <h1 class="hero-title mb-2">Take Attendance</h1>
         <p class="hero-text mb-0">
-            Select a class, choose the attendance date, and save daily student attendance records for Shukur Quran Institute.
+            Select a class, choose the attendance date, and save each student's attendance independently for Shukur Quran Institute.
         </p>
     </div>
 
@@ -23,6 +23,13 @@
 {
     <div class="alert alert-success border-0 shadow-sm mb-4" role="alert">
         @Model.SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+        @Model.ErrorMessage
     </div>
 }
 
@@ -70,83 +77,101 @@
     </div>
 </div>
 
-<form method="post">
-    <input type="hidden" asp-for="ClassRoomId" />
-    <input type="hidden" asp-for="AttendanceDate" />
-
-    <div class="card border-0">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-4 border-bottom">
-                <div>
-                    <h3 class="section-title mb-1">Attendance Register</h3>
-                    <p class="stat-text mb-0">Review each student and update the correct status and remarks.</p>
-                </div>
-
-                @if (Model.Items.Any())
-                {
-                    <button type="submit" class="btn btn-primary">Save Attendance</button>
-                }
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-4 border-bottom">
+            <div>
+                <h3 class="section-title mb-1">Attendance Register</h3>
+                <p class="stat-text mb-0">Save attendance one student at a time without affecting other students.</p>
             </div>
-
-            @if (Model.Items.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">Admission No</th>
-                                <th>Student Name</th>
-                                <th style="min-width: 180px;">Status</th>
-                                <th style="min-width: 240px;" class="pe-4">Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.Items.Count; i++)
-                            {
-                                <tr>
-                                    <td class="ps-4">
-                                        <span class="fw-semibold">@Model.Items[i].AdmissionNo</span>
-                                        <input type="hidden" asp-for="Items[i].StudentId" />
-                                        <input type="hidden" asp-for="Items[i].AdmissionNo" />
-                                        <input type="hidden" asp-for="Items[i].FullName" />
-                                        <input type="hidden" asp-for="Items[i].ClassRoomId" />
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold text-dark">@Model.Items[i].FullName</div>
-                                    </td>
-                                    <td>
-                                        <select asp-for="Items[i].Status" class="form-select">
-                                            <option value="@AttendanceStatus.Present">Present</option>
-                                            <option value="@AttendanceStatus.Absent">Absent</option>
-                                            <option value="@AttendanceStatus.Late">Late</option>
-                                        </select>
-                                    </td>
-                                    <td class="pe-4">
-                                        <input asp-for="Items[i].Remarks" class="form-control" placeholder="Optional remarks" />
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="p-4 border-top bg-light-subtle">
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary px-4">Save Attendance</button>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="p-4">
-                    <div class="text-center py-5">
-                        <h4 class="section-title mb-2">No students loaded</h4>
-                        <p class="stat-text mb-0">
-                            Select a class and date above, then click <strong>Load Attendance</strong> to begin.
-                        </p>
-                    </div>
-                </div>
-            }
         </div>
+
+        @if (Model.Items.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Admission No</th>
+                            <th>Student Name</th>
+                            <th style="min-width: 180px;">Status</th>
+                            <th style="min-width: 240px;">Remarks</th>
+                            <th style="min-width: 150px;" class="pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            var formId = $"attendance-form-{item.StudentId}";
+
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-semibold">@item.AdmissionNo</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">@item.FullName</div>
+                                </td>
+                                <td>
+                                    <select name="status" class="form-select" form="@formId">
+                                        @if (item.Status == AttendanceStatus.Present)
+                                        {
+                                            <option value="@AttendanceStatus.Present" selected>Present</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@AttendanceStatus.Present">Present</option>
+                                        }
+
+                                        @if (item.Status == AttendanceStatus.Absent)
+                                        {
+                                            <option value="@AttendanceStatus.Absent" selected>Absent</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@AttendanceStatus.Absent">Absent</option>
+                                        }
+
+                                        @if (item.Status == AttendanceStatus.Late)
+                                        {
+                                            <option value="@AttendanceStatus.Late" selected>Late</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@AttendanceStatus.Late">Late</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input name="remarks"
+                                           value="@item.Remarks"
+                                           class="form-control"
+                                           placeholder="Optional remarks"
+                                           form="@formId" />
+                                </td>
+                                <td class="pe-4">
+                                    <form method="post" asp-page-handler="SaveStudent" id="@formId">
+                                        <input type="hidden" name="studentId" value="@item.StudentId" />
+                                        <input type="hidden" name="classRoomId" value="@item.ClassRoomId" />
+                                        <input type="hidden" name="attendanceDate" value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+                                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-4">
+                <div class="text-center py-5">
+                    <h4 class="section-title mb-2">No students loaded</h4>
+                    <p class="stat-text mb-0">
+                        Select a class and date above, then click <strong>Load Attendance</strong> to begin.
+                    </p>
+                </div>
+            </div>
+        }
     </div>
-</form>
+</div>

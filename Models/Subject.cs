@@ -16,5 +16,6 @@ namespace StudentRecordSystem.Models
         public ClassRoom? ClassRoom { get; set; }
 
         public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+        public ICollection<TimetableEntry> TimetableEntries { get; set; } = new List<TimetableEntry>();
     }
 }

@@ -1,8 +1,8 @@
 @page
-using Microsoft.AspNetCore.Authorization;
-
-[Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
 @model StudentRecordSystem.Pages_MutoonRecords.IndexModel
+
+@attribute [Authorize(Roles = "Admin")]
 
 @{
     ViewData["Title"] = "Mutoon Records";
@@ -20,7 +20,8 @@ using Microsoft.AspNetCore.Authorization;
             <th>Student</th>
             <th>Admission No</th>
             <th>Matn Name</th>
-            <th>Portion Reached</th>
+            <th>From Portion</th>
+            <th>To Portion</th>
             <th>Record Date</th>
             <th>Remarks</th>
             <th></th>
@@ -33,7 +34,8 @@ using Microsoft.AspNetCore.Authorization;
             <td>@item.Student?.FullName</td>
             <td>@item.Student?.AdmissionNo</td>
             <td>@item.MatnName</td>
-            <td>@item.Portion</td>
+            <td>@item.FromPortion</td>
+            <td>@item.ToPortion</td>
             <td>@item.RecordDate.ToShortDateString()</td>
             <td>@item.Remarks</td>
             <td>

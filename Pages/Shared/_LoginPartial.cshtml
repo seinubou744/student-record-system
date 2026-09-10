@@ -3,22 +3,28 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav">
+<ul class="navbar-nav app-user-nav align-items-lg-center">
 @if (SignInManager.IsSignedIn(User))
 {
     var user = await UserManager.GetUserAsync(User);
     var displayName = user?.FullName ?? User.Identity?.Name ?? "User";
 
     <li class="nav-item">
-        <span class="nav-link text-dark">Hello @displayName!</span>
+        <a class="nav-link app-user-greeting"
+           asp-area="Identity"
+           asp-page="/Account/Manage/Index"
+           title="Manage Account">
+            <span class="app-user-label">Hello</span>
+            <span class="app-user-name">@displayName</span>
+        </a>
     </li>
     <li class="nav-item">
         <form asp-area="Identity"
               asp-page="/Account/Logout"
               asp-route-returnUrl="@Url.Page("/Index", new { area = "" })"
               method="post"
-              class="d-inline">
-            <button type="submit" class="nav-link btn btn-link text-dark border-0">
+              class="app-logout-form">
+            <button type="submit" class="nav-link btn btn-link app-logout-button">
                 Logout
             </button>
         </form>
@@ -27,7 +33,11 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link app-login-link"
+           asp-area="Identity"
+           asp-page="/Account/Login">
+            Login
+        </a>
     </li>
 }
 </ul>

@@ -114,7 +114,9 @@
                                 }
                                 else
                                 {
-                                    <th style="min-width: 260px;">Portion</th>
+                                    <th style="min-width: 220px;">Matn Name</th>
+                                    <th style="min-width: 220px;">From Portion</th>
+                                    <th style="min-width: 220px;">To Portion</th>
                                 }
 
                                 <th style="min-width: 240px;" class="pe-4">Remarks</th>
@@ -153,7 +155,13 @@
                                     else
                                     {
                                         <td>
-                                            <input asp-for="Items[i].Portion" class="form-control" placeholder="Enter portion" />
+                                            <input asp-for="Items[i].MatnName" class="form-control" placeholder="Enter matn name" />
+                                        </td>
+                                        <td>
+                                            <input asp-for="Items[i].FromPortion" class="form-control" placeholder="Enter from portion" />
+                                        </td>
+                                        <td>
+                                            <input asp-for="Items[i].ToPortion" class="form-control" placeholder="Enter to portion" />
                                         </td>
                                     }
 

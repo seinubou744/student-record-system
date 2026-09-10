@@ -1,0 +1,74 @@
+@page
+@model StudentRecordSystem.Pages.TeacherPortal.MyTimetableModel
+@using StudentRecordSystem.Models
+@{
+    ViewData["Title"] = "My Timetable";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">My Timetable</h1>
+        <p class="text-muted mb-0">Your assigned teaching schedule.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Day</label>
+                <select asp-for="Day" asp-items="Html.GetEnumSelectList<WeekDay>()" class="form-select">
+                    <option value="">All Days</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="AcademicYear" class="form-label">Academic Year</label>
+                <input asp-for="AcademicYear" class="form-control" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Entries.Any())
+                {
+                    @foreach (var item in Model.Entries)
+                    {
+                        <tr>
+                            <td>@item.DayOfWeek</td>
+                            <td>@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                            <td>@item.Subject?.Name</td>
+                            <td>@item.ClassRoom?.Name</td>
+                            <td>@item.Section?.Name</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.RoomNumber) ? "-" : item.RoomNumber)</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No timetable entries found.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

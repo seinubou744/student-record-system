@@ -33,8 +33,12 @@ namespace StudentRecordSystem.Pages.TeacherPortal
         [BindProperty]
         public List<TestInputModel> Items { get; set; } = new();
 
+        [BindProperty]
+        public TestInputModel RowInput { get; set; } = new();
+
         public List<SelectListItem> TeacherClasses { get; set; } = new();
-        public List<SelectListItem> SurahOptions { get; set; } = new();
+
+        public List<string> SurahList { get; set; } = GetSurahList();
 
         [TempData]
         public string? SuccessMessage { get; set; }
@@ -48,18 +52,21 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             public string StudentName { get; set; } = string.Empty;
             public int ClassRoomId { get; set; }
 
-            public string? SurahName { get; set; }
+            public string? FromSurah { get; set; }
             public int? FromAyah { get; set; }
+            public string? ToSurah { get; set; }
             public int? ToAyah { get; set; }
 
-            public string? Portion { get; set; }
+            public string? MatnName { get; set; }
+            public string? FromPortion { get; set; }
+            public string? ToPortion { get; set; }
+
             public decimal Marks { get; set; }
             public string? Remarks { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            LoadSurahOptions();
             await LoadPageAsync();
             return Page();
         }
@@ -69,7 +76,6 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            LoadSurahOptions();
             await LoadTeacherClassesAsync(user.Id);
 
             if (ClassRoomId == null)
@@ -110,10 +116,13 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             foreach (var item in Items)
             {
                 bool hasAnyData =
-                    !string.IsNullOrWhiteSpace(item.SurahName) ||
+                    !string.IsNullOrWhiteSpace(item.FromSurah) ||
                     item.FromAyah.HasValue ||
+                    !string.IsNullOrWhiteSpace(item.ToSurah) ||
                     item.ToAyah.HasValue ||
-                    !string.IsNullOrWhiteSpace(item.Portion) ||
+                    !string.IsNullOrWhiteSpace(item.MatnName) ||
+                    !string.IsNullOrWhiteSpace(item.FromPortion) ||
+                    !string.IsNullOrWhiteSpace(item.ToPortion) ||
                     item.Marks > 0 ||
                     !string.IsNullOrWhiteSpace(item.Remarks);
 
@@ -122,36 +131,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     continue;
                 }
 
-                if (TestType == LearningRecordType.Quran)
-                {
-                    if (string.IsNullOrWhiteSpace(item.SurahName))
-                    {
-                        ModelState.AddModelError(string.Empty, $"Please select a Surah for {item.StudentName}.");
-                    }
-
-                    if (!item.FromAyah.HasValue)
-                    {
-                        ModelState.AddModelError(string.Empty, $"Please select From Ayah for {item.StudentName}.");
-                    }
-
-                    if (!item.ToAyah.HasValue)
-                    {
-                        ModelState.AddModelError(string.Empty, $"Please select To Ayah for {item.StudentName}.");
-                    }
-
-                    if (item.FromAyah.HasValue && item.ToAyah.HasValue &&
-                        item.FromAyah.Value > item.ToAyah.Value)
-                    {
-                        ModelState.AddModelError(string.Empty, $"From Ayah cannot be greater than To Ayah for {item.StudentName}.");
-                    }
-                }
-                else if (TestType == LearningRecordType.Mutoon)
-                {
-                    if (string.IsNullOrWhiteSpace(item.Portion))
-                    {
-                        ModelState.AddModelError(string.Empty, $"Please enter a portion for {item.StudentName}.");
-                    }
-                }
+                ValidateSingleRow(item);
 
                 rowsToSave.Add(item);
             }
@@ -181,36 +161,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
 
             foreach (var item in rowsToSave)
             {
-                var saved = existing.FirstOrDefault(x => x.StudentId == item.StudentId);
-
-                if (saved == null)
-                {
-                    _context.StudentTestRecords.Add(new StudentTestRecord
-                    {
-                        StudentId = item.StudentId,
-                        ClassRoomId = item.ClassRoomId,
-                        TestType = TestType,
-                        TestDate = selectedDate,
-                        SurahName = TestType == LearningRecordType.Quran ? item.SurahName : null,
-                        FromAyah = TestType == LearningRecordType.Quran ? item.FromAyah : null,
-                        ToAyah = TestType == LearningRecordType.Quran ? item.ToAyah : null,
-                        Portion = TestType == LearningRecordType.Mutoon ? item.Portion : null,
-                        Marks = item.Marks,
-                        Remarks = item.Remarks,
-                        TeacherUserId = user.Id
-                    });
-                }
-                else
-                {
-                    saved.SurahName = TestType == LearningRecordType.Quran ? item.SurahName : null;
-                    saved.FromAyah = TestType == LearningRecordType.Quran ? item.FromAyah : null;
-                    saved.ToAyah = TestType == LearningRecordType.Quran ? item.ToAyah : null;
-                    saved.Portion = TestType == LearningRecordType.Mutoon ? item.Portion : null;
-                    saved.Marks = item.Marks;
-                    saved.Remarks = item.Remarks;
-                    saved.TeacherUserId = user.Id;
-                    saved.TestDate = selectedDate;
-                }
+                await SaveSingleStudentRecordAsync(item, existing, user.Id, selectedDate);
             }
 
             await _context.SaveChangesAsync();
@@ -224,6 +175,154 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             });
         }
 
+        public async Task<IActionResult> OnPostSaveStudentAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            await LoadTeacherClassesAsync(user.Id);
+
+            if (ClassRoomId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Please select a class.");
+                await LoadPageAsync();
+                return Page();
+            }
+
+            var allowed = await _context.TeacherClasses
+                .AnyAsync(tc => tc.TeacherUserId == user.Id && tc.ClassRoomId == ClassRoomId.Value);
+
+            if (!allowed)
+            {
+                return Forbid();
+            }
+
+            if (RowInput == null || RowInput.StudentId <= 0)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid student row submitted.");
+                await LoadPageAsync();
+                return Page();
+            }
+
+            ValidateSingleRow(RowInput);
+
+            if (!ModelState.IsValid)
+            {
+                await LoadPageAsync();
+                return Page();
+            }
+
+            var selectedDate = DateTime.SpecifyKind(TestDate.Date, DateTimeKind.Utc);
+
+            var existing = await _context.StudentTestRecords
+                .Where(t => t.ClassRoomId == ClassRoomId.Value &&
+                            t.TestDate == selectedDate &&
+                            t.TestType == TestType)
+                .ToListAsync();
+
+            await SaveSingleStudentRecordAsync(RowInput, existing, user.Id, selectedDate);
+
+            await _context.SaveChangesAsync();
+
+            SuccessMessage = $"{RowInput.StudentName} test record saved successfully.";
+
+            return RedirectToPage(new
+            {
+                ClassRoomId,
+                TestType,
+                TestDate = selectedDate.ToString("yyyy-MM-dd")
+            });
+        }
+
+        private void ValidateSingleRow(TestInputModel item)
+        {
+            if (TestType == LearningRecordType.Quran)
+            {
+                if (string.IsNullOrWhiteSpace(item.FromSurah))
+                {
+                    ModelState.AddModelError(string.Empty, $"Please select From Surah for {item.StudentName}.");
+                }
+
+                if (!item.FromAyah.HasValue)
+                {
+                    ModelState.AddModelError(string.Empty, $"Please enter From Ayah for {item.StudentName}.");
+                }
+
+                if (string.IsNullOrWhiteSpace(item.ToSurah))
+                {
+                    ModelState.AddModelError(string.Empty, $"Please select To Surah for {item.StudentName}.");
+                }
+
+                if (!item.ToAyah.HasValue)
+                {
+                    ModelState.AddModelError(string.Empty, $"Please enter To Ayah for {item.StudentName}.");
+                }
+            }
+            else if (TestType == LearningRecordType.Mutoon)
+            {
+                if (string.IsNullOrWhiteSpace(item.MatnName))
+                {
+                    ModelState.AddModelError(string.Empty, $"Please enter Matn Name for {item.StudentName}.");
+                }
+
+                if (string.IsNullOrWhiteSpace(item.FromPortion))
+                {
+                    ModelState.AddModelError(string.Empty, $"Please enter From Portion for {item.StudentName}.");
+                }
+
+                if (string.IsNullOrWhiteSpace(item.ToPortion))
+                {
+                    ModelState.AddModelError(string.Empty, $"Please enter To Portion for {item.StudentName}.");
+                }
+            }
+        }
+
+        private async Task SaveSingleStudentRecordAsync(
+            TestInputModel item,
+            List<StudentTestRecord> existing,
+            string teacherUserId,
+            DateTime selectedDate)
+        {
+            var saved = existing.FirstOrDefault(x => x.StudentId == item.StudentId);
+
+            if (saved == null)
+            {
+                _context.StudentTestRecords.Add(new StudentTestRecord
+                {
+                    StudentId = item.StudentId,
+                    ClassRoomId = item.ClassRoomId,
+                    TestType = TestType,
+                    TestDate = selectedDate,
+                    FromSurah = TestType == LearningRecordType.Quran ? item.FromSurah : null,
+                    FromAyah = TestType == LearningRecordType.Quran ? item.FromAyah : null,
+                    ToSurah = TestType == LearningRecordType.Quran ? item.ToSurah : null,
+                    ToAyah = TestType == LearningRecordType.Quran ? item.ToAyah : null,
+                    MatnName = TestType == LearningRecordType.Mutoon ? item.MatnName : null,
+                    FromPortion = TestType == LearningRecordType.Mutoon ? item.FromPortion : null,
+                    ToPortion = TestType == LearningRecordType.Mutoon ? item.ToPortion : null,
+                    Marks = item.Marks,
+                    Remarks = item.Remarks,
+                    TeacherUserId = teacherUserId
+                });
+            }
+            else
+            {
+                saved.FromSurah = TestType == LearningRecordType.Quran ? item.FromSurah : null;
+                saved.FromAyah = TestType == LearningRecordType.Quran ? item.FromAyah : null;
+                saved.ToSurah = TestType == LearningRecordType.Quran ? item.ToSurah : null;
+                saved.ToAyah = TestType == LearningRecordType.Quran ? item.ToAyah : null;
+                saved.MatnName = TestType == LearningRecordType.Mutoon ? item.MatnName : null;
+                saved.FromPortion = TestType == LearningRecordType.Mutoon ? item.FromPortion : null;
+                saved.ToPortion = TestType == LearningRecordType.Mutoon ? item.ToPortion : null;
+                saved.Marks = item.Marks;
+                saved.Remarks = item.Remarks;
+                saved.TeacherUserId = teacherUserId;
+                saved.TestDate = selectedDate;
+            }
+
+            await Task.CompletedTask;
+        }
+
         private async Task LoadPageAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -233,7 +332,6 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 return;
             }
 
-            LoadSurahOptions();
             await LoadTeacherClassesAsync(user.Id);
 
             if (!TeacherClasses.Any())
@@ -286,10 +384,13 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 var saved = existing.FirstOrDefault(x => x.StudentId == item.StudentId);
                 if (saved != null)
                 {
-                    item.SurahName = saved.SurahName;
+                    item.FromSurah = saved.FromSurah;
                     item.FromAyah = saved.FromAyah;
+                    item.ToSurah = saved.ToSurah;
                     item.ToAyah = saved.ToAyah;
-                    item.Portion = saved.Portion;
+                    item.MatnName = saved.MatnName;
+                    item.FromPortion = saved.FromPortion;
+                    item.ToPortion = saved.ToPortion;
                     item.Marks = saved.Marks;
                     item.Remarks = saved.Remarks;
                 }
@@ -312,9 +413,9 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 .ToListAsync();
         }
 
-        private void LoadSurahOptions()
+        private static List<string> GetSurahList()
         {
-            var surahs = new List<string>
+            return new List<string>
             {
                 "Al-Fatihah",
                 "Al-Baqarah",
@@ -373,7 +474,7 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 "Ar-Rahman",
                 "Al-Waqi'ah",
                 "Al-Hadid",
-                "Al-Mujadilah",
+                "Al-Mujadila",
                 "Al-Hashr",
                 "Al-Mumtahanah",
                 "As-Saff",
@@ -389,13 +490,13 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 "Nuh",
                 "Al-Jinn",
                 "Al-Muzzammil",
-                "Al-Muddaththir",
+                "Al-Muddathir",
                 "Al-Qiyamah",
                 "Al-Insan",
                 "Al-Mursalat",
                 "An-Naba",
                 "An-Nazi'at",
-                "Abasa",
+                "'Abasa",
                 "At-Takwir",
                 "Al-Infitar",
                 "Al-Mutaffifin",
@@ -411,14 +512,14 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 "Ad-Duha",
                 "Ash-Sharh",
                 "At-Tin",
-                "Al-Alaq",
+                "Al-'Alaq",
                 "Al-Qadr",
                 "Al-Bayyinah",
                 "Az-Zalzalah",
-                "Al-Adiyat",
+                "Al-'Adiyat",
                 "Al-Qari'ah",
                 "At-Takathur",
-                "Al-Asr",
+                "Al-'Asr",
                 "Al-Humazah",
                 "Al-Fil",
                 "Quraysh",
@@ -431,14 +532,6 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 "Al-Falaq",
                 "An-Nas"
             };
-
-            SurahOptions = surahs
-                .Select(s => new SelectListItem
-                {
-                    Value = s,
-                    Text = s
-                })
-                .ToList();
         }
     }
 }

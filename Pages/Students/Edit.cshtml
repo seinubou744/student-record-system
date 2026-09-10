@@ -7,25 +7,22 @@
 
 <h1>Edit Student</h1>
 
-<h4>Student</h4>
+<h4>Student Account</h4>
 <hr />
 
 <div class="row">
     <div class="col-md-6">
         <form method="post">
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
             <input type="hidden" asp-for="Student.Id" />
             <input type="hidden" asp-for="Student.ApplicationUserId" />
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
             <div class="form-group mb-3">
                 <span class="text-danger">*</span>
                 <label asp-for="Student.AdmissionNo" class="control-label"></label>
                 <input asp-for="Student.AdmissionNo" class="form-control" aria-required="true" />
                 <span asp-validation-for="Student.AdmissionNo" class="text-danger"></span>
-                <small class="form-text text-muted">
-                    This admission number is also the student's login username.
-                </small>
             </div>
 
             <div class="form-group mb-3">
@@ -38,15 +35,38 @@
             <div class="form-group mb-3">
                 <span class="text-danger">*</span>
                 <label asp-for="Student.ClassRoomId" class="control-label"></label>
-                <select asp-for="Student.ClassRoomId" class="form-control" asp-items="ViewBag.ClassRoomId" aria-required="true">
+                <select asp-for="Student.ClassRoomId"
+                        class="form-control"
+                        asp-items="ViewBag.ClassRoomId"
+                        aria-required="true"
+                        onchange="document.getElementById('loadSectionsButton').click();">
                     <option value="">-- Select Class Room --</option>
                 </select>
                 <span asp-validation-for="Student.ClassRoomId" class="text-danger"></span>
             </div>
 
+            <div class="form-group mb-3">
+                <span class="text-danger">*</span>
+                <label asp-for="Student.SectionId" class="control-label">Section</label>
+                <select asp-for="Student.SectionId"
+                        class="form-control"
+                        asp-items="ViewBag.SectionId"
+                        aria-required="true">
+                    <option value="">-- Select Section --</option>
+                </select>
+                <span asp-validation-for="Student.SectionId" class="text-danger"></span>
+            </div>
+
+            <button id="loadSectionsButton"
+                    type="submit"
+                    asp-page-handler="LoadSections"
+                    class="d-none"
+                    formnovalidate>
+            </button>
+
             <div class="form-group mt-3">
                 <input type="submit" value="Save Changes" class="btn btn-primary" />
-                <a asp-page="./Index" class="btn btn-secondary ms-2">Back to List</a>
+                <a asp-page="Index" class="btn btn-secondary ms-2">Back to List</a>
             </div>
         </form>
     </div>

@@ -15,8 +15,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Test Type</th>
-                    <th>Qur'an Details</th>
-                    <th>Mutoon Portion</th>
+                    <th>Range Details</th>
                     <th>Marks</th>
                     <th>Remarks</th>
                 </tr>
@@ -30,19 +29,21 @@
                         <td>
                             @if (item.TestType == LearningRecordType.Quran)
                             {
-                                <span>
-                                    @item.SurahName
-                                    @if (item.FromAyah.HasValue && item.ToAyah.HasValue)
-                                    {
-                                        <text> (@item.FromAyah - @item.ToAyah)</text>
-                                    }
-                                </span>
+                                <div>
+                                    <strong>From:</strong> @item.FromSurah @if (item.FromAyah.HasValue) { <span>(Ayah @item.FromAyah)</span> }
+                                </div>
+                                <div>
+                                    <strong>To:</strong> @item.ToSurah @if (item.ToAyah.HasValue) { <span>(Ayah @item.ToAyah)</span> }
+                                </div>
                             }
-                        </td>
-                        <td>
-                            @if (item.TestType == LearningRecordType.Mutoon)
+                            else if (item.TestType == LearningRecordType.Mutoon)
                             {
-                                @item.Portion
+                                <div>
+                                    <strong>From Portion:</strong> @item.FromPortion
+                                </div>
+                                <div>
+                                    <strong>To Portion:</strong> @item.ToPortion
+                                </div>
                             }
                         </td>
                         <td>@item.Marks</td>

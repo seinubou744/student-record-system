@@ -14,7 +14,9 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Portion</th>
+                    <th>Matn Name</th>
+                    <th>From Portion</th>
+                    <th>To Portion</th>
                     <th>Remarks</th>
                 </tr>
             </thead>
@@ -23,7 +25,9 @@
                 {
                     <tr>
                         <td>@item.RecordDate.ToString("yyyy-MM-dd")</td>
-                        <td>@item.Portion</td>
+                        <td>@item.MatnName</td>
+                        <td>@item.FromPortion</td>
+                        <td>@item.ToPortion</td>
                         <td>@item.Remarks</td>
                     </tr>
                 }

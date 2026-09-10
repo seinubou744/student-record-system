@@ -21,20 +21,25 @@ namespace StudentRecordSystem.Pages.StudentPortal
 
         public IList<TeacherAttendance> AttendanceRecords { get; set; } = new List<TeacherAttendance>();
 
+        public Student? CurrentStudent { get; set; }
+
         public async Task OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return;
 
-            var student = await _context.Students
+            CurrentStudent = await _context.Students
+                .AsNoTracking()
+                .Include(s => s.ClassRoom)
                 .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
-            if (student == null)
+            if (CurrentStudent == null)
                 return;
 
             AttendanceRecords = await _context.TeacherAttendances
-                .Where(a => a.StudentId == student.Id)
+                .AsNoTracking()
+                .Where(a => a.StudentId == CurrentStudent.Id)
                 .OrderByDescending(a => a.AttendanceDate)
                 .ToListAsync();
         }

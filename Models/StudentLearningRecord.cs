@@ -17,7 +17,10 @@ namespace StudentRecordSystem.Models
         public int? FromAyah { get; set; }
         public int? ToAyah { get; set; }
 
-        public string? Portion { get; set; }
+        public string? MatnName { get; set; }
+        public string? FromPortion { get; set; }
+        public string? ToPortion { get; set; }
+
         public string? Remarks { get; set; }
 
         public string TeacherUserId { get; set; } = string.Empty;

@@ -15,8 +15,11 @@ namespace StudentRecordSystem.Models
         public string FullName { get; set; } = string.Empty;
 
         [Required]
-        public int ClassRoomId { get; set; }
+        public int SectionId { get; set; }
+        public Section? Section { get; set; }
 
+        [Required]
+        public int ClassRoomId { get; set; }
         public ClassRoom? ClassRoom { get; set; }
 
         public string? ApplicationUserId { get; set; }

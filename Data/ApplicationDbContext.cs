@@ -23,7 +23,8 @@ namespace StudentRecordSystem.Data
         public DbSet<StudentLearningRecord> StudentLearningRecords { get; set; }
         public DbSet<StudentTestRecord> StudentTestRecords { get; set; }
         public DbSet<TeacherAttendance> TeacherAttendances { get; set; }
-        
+        public DbSet<Section> Sections => Set<Section>();
+        public DbSet<TimetableEntry> TimetableEntries => Set<TimetableEntry>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -187,6 +188,67 @@ namespace StudentRecordSystem.Data
                 .WithMany()
                 .HasForeignKey(tc => tc.ClassRoomId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Section>()
+                .HasIndex(s => new { s.ClassRoomId, s.Name })
+                .IsUnique();
+
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.Section)
+                .WithMany(sec => sec.Students)
+                .HasForeignKey(s => s.SectionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Section>()
+                .HasOne(s => s.ClassRoom)
+                .WithMany(c => c.Sections)
+                .HasForeignKey(s => s.ClassRoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasOne(t => t.ClassRoom)
+                .WithMany(c => c.TimetableEntries)
+                .HasForeignKey(t => t.ClassRoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasOne(t => t.Section)
+                .WithMany(s => s.TimetableEntries)
+                .HasForeignKey(t => t.SectionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasOne(t => t.Subject)
+                .WithMany(s => s.TimetableEntries)
+                .HasForeignKey(t => t.SubjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasOne(t => t.Teacher)
+                .WithMany(u => u.TeachingTimetableEntries)
+                .HasForeignKey(t => t.TeacherId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasIndex(t => new
+                {
+                    t.ClassRoomId,
+                    t.SectionId,
+                    t.DayOfWeek,
+                    t.StartTime,
+                    t.EndTime,
+                    t.AcademicYear
+                });
+
+            modelBuilder.Entity<TimetableEntry>()
+                .HasIndex(t => new
+                {
+                    t.TeacherId,
+                    t.DayOfWeek,
+                    t.StartTime,
+                    t.EndTime,
+                    t.AcademicYear
+                });
 
         }
     }

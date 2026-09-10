@@ -19,8 +19,12 @@ namespace StudentRecordSystem.Models
 
         [Required]
         [StringLength(150)]
-        [Display(Name = "Portion Reached")]
-        public string Portion { get; set; } = string.Empty;
+        [Display(Name = "From Portion")]
+        public string FromPortion { get; set; } = string.Empty;
+
+        [StringLength(150)]
+        [Display(Name = "To Portion")]
+        public string? ToPortion { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Record Date")]

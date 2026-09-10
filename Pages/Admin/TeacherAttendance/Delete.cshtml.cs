@@ -21,14 +21,18 @@ namespace StudentRecordSystem.Pages.Admin.TeacherAttendance
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var record = await _context.TeacherAttendances
+                .AsNoTracking()
                 .Include(t => t.Student)
                 .Include(t => t.ClassRoom)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .Include(t => t.TeacherUser)
+                .FirstOrDefaultAsync(t => t.Id == id.Value);
 
-            if (record == null) return NotFound();
+            if (record == null)
+                return NotFound();
 
             TeacherAttendanceRecord = record;
             return Page();
@@ -36,14 +40,17 @@ namespace StudentRecordSystem.Pages.Admin.TeacherAttendance
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
-            var record = await _context.TeacherAttendances.FindAsync(id);
-            if (record != null)
-            {
-                _context.TeacherAttendances.Remove(record);
-                await _context.SaveChangesAsync();
-            }
+            var record = await _context.TeacherAttendances
+                .FirstOrDefaultAsync(t => t.Id == id.Value);
+
+            if (record == null)
+                return RedirectToPage("./Index");
+
+            _context.TeacherAttendances.Remove(record);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

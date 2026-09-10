@@ -238,7 +238,7 @@ namespace StudentRecordSystem.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsPresent")
                         .HasColumnType("boolean");
@@ -285,18 +285,18 @@ namespace StudentRecordSystem.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("FromPortion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
                     b.Property<string>("MatnName")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<string>("Portion")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
                     b.Property<DateTime>("RecordDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(300)
@@ -304,6 +304,10 @@ namespace StudentRecordSystem.Migrations
 
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ToPortion")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
 
@@ -321,7 +325,7 @@ namespace StudentRecordSystem.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Message")
                         .HasMaxLength(500)
@@ -367,7 +371,7 @@ namespace StudentRecordSystem.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("RecordDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(300)
@@ -389,6 +393,34 @@ namespace StudentRecordSystem.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("QuranRecords");
+                });
+
+            modelBuilder.Entity("StudentRecordSystem.Models.Section", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClassRoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Sections");
                 });
 
             modelBuilder.Entity("StudentRecordSystem.Models.Student", b =>
@@ -415,6 +447,9 @@ namespace StudentRecordSystem.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
+                    b.Property<int>("SectionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AdmissionNo")
@@ -424,6 +459,8 @@ namespace StudentRecordSystem.Migrations
                         .IsUnique();
 
                     b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("SectionId");
 
                     b.ToTable("Students");
                 });
@@ -437,13 +474,13 @@ namespace StudentRecordSystem.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ClassRoomId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("text");
@@ -481,16 +518,19 @@ namespace StudentRecordSystem.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("FromAyah")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Portion")
+                    b.Property<string>("FromPortion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MatnName")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RecordDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("RecordType")
                         .HasColumnType("integer");
@@ -510,6 +550,9 @@ namespace StudentRecordSystem.Migrations
 
                     b.Property<int?>("ToAyah")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ToPortion")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -534,15 +577,21 @@ namespace StudentRecordSystem.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("FromAyah")
                         .HasColumnType("integer");
 
+                    b.Property<string>("FromPortion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FromSurah")
+                        .HasColumnType("text");
+
                     b.Property<decimal>("Marks")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("Portion")
+                    b.Property<string>("MatnName")
                         .HasColumnType("text");
 
                     b.Property<string>("Remarks")
@@ -551,21 +600,24 @@ namespace StudentRecordSystem.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("SurahName")
-                        .HasColumnType("text");
-
                     b.Property<string>("TeacherUserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("TestDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("TestType")
                         .HasColumnType("integer");
 
                     b.Property<int?>("ToAyah")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ToPortion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ToSurah")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -610,13 +662,13 @@ namespace StudentRecordSystem.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ClassRoomId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(300)
@@ -664,6 +716,64 @@ namespace StudentRecordSystem.Migrations
                     b.HasIndex("TeacherUserId");
 
                     b.ToTable("TeacherClasses");
+                });
+
+            modelBuilder.Entity("StudentRecordSystem.Models.TimetableEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AcademicYear")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ClassRoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("RoomNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TeacherId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId", "DayOfWeek", "StartTime", "EndTime", "AcademicYear");
+
+                    b.HasIndex("ClassRoomId", "SectionId", "DayOfWeek", "StartTime", "EndTime", "AcademicYear");
+
+                    b.ToTable("TimetableEntries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -777,6 +887,17 @@ namespace StudentRecordSystem.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("StudentRecordSystem.Models.Section", b =>
+                {
+                    b.HasOne("StudentRecordSystem.Models.ClassRoom", "ClassRoom")
+                        .WithMany("Sections")
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClassRoom");
+                });
+
             modelBuilder.Entity("StudentRecordSystem.Models.Student", b =>
                 {
                     b.HasOne("StudentRecordSystem.Models.ApplicationUser", "ApplicationUser")
@@ -790,9 +911,17 @@ namespace StudentRecordSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("StudentRecordSystem.Models.Section", "Section")
+                        .WithMany("Students")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("ClassRoom");
+
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("StudentRecordSystem.Models.StudentAttendance", b =>
@@ -932,16 +1061,64 @@ namespace StudentRecordSystem.Migrations
                     b.Navigation("TeacherUser");
                 });
 
+            modelBuilder.Entity("StudentRecordSystem.Models.TimetableEntry", b =>
+                {
+                    b.HasOne("StudentRecordSystem.Models.ClassRoom", "ClassRoom")
+                        .WithMany("TimetableEntries")
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentRecordSystem.Models.Section", "Section")
+                        .WithMany("TimetableEntries")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentRecordSystem.Models.Subject", "Subject")
+                        .WithMany("TimetableEntries")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentRecordSystem.Models.ApplicationUser", "Teacher")
+                        .WithMany("TeachingTimetableEntries")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassRoom");
+
+                    b.Navigation("Section");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("StudentRecordSystem.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Student");
+
+                    b.Navigation("TeachingTimetableEntries");
                 });
 
             modelBuilder.Entity("StudentRecordSystem.Models.ClassRoom", b =>
                 {
+                    b.Navigation("Sections");
+
                     b.Navigation("Students");
 
                     b.Navigation("Subjects");
+
+                    b.Navigation("TimetableEntries");
+                });
+
+            modelBuilder.Entity("StudentRecordSystem.Models.Section", b =>
+                {
+                    b.Navigation("Students");
+
+                    b.Navigation("TimetableEntries");
                 });
 
             modelBuilder.Entity("StudentRecordSystem.Models.Student", b =>
@@ -956,6 +1133,8 @@ namespace StudentRecordSystem.Migrations
             modelBuilder.Entity("StudentRecordSystem.Models.Subject", b =>
                 {
                     b.Navigation("Attendances");
+
+                    b.Navigation("TimetableEntries");
                 });
 #pragma warning restore 612, 618
         }

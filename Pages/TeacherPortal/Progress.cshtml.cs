@@ -50,7 +50,10 @@ namespace StudentRecordSystem.Pages.TeacherPortal
             public int? FromAyah { get; set; }
             public int? ToAyah { get; set; }
 
-            public string? Portion { get; set; }
+            public string? MatnName { get; set; }
+            public string? FromPortion { get; set; }
+            public string? ToPortion { get; set; }
+
             public string? Remarks { get; set; }
         }
 
@@ -126,9 +129,27 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                 {
                     var item = Items[i];
 
-                    if (string.IsNullOrWhiteSpace(item.Portion))
+                    var hasAnyMutoonField =
+                        !string.IsNullOrWhiteSpace(item.MatnName) ||
+                        !string.IsNullOrWhiteSpace(item.FromPortion) ||
+                        !string.IsNullOrWhiteSpace(item.ToPortion);
+
+                    if (hasAnyMutoonField)
                     {
-                        ModelState.AddModelError(string.Empty, $"Please enter Portion for {item.StudentName}.");
+                        if (string.IsNullOrWhiteSpace(item.MatnName))
+                        {
+                            ModelState.AddModelError(string.Empty, $"Please enter Matn Name for {item.StudentName}.");
+                        }
+
+                        if (string.IsNullOrWhiteSpace(item.FromPortion))
+                        {
+                            ModelState.AddModelError(string.Empty, $"Please enter From Portion for {item.StudentName}.");
+                        }
+
+                        if (string.IsNullOrWhiteSpace(item.ToPortion))
+                        {
+                            ModelState.AddModelError(string.Empty, $"Please enter To Portion for {item.StudentName}.");
+                        }
                     }
                 }
             }
@@ -161,7 +182,9 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     SurahName = RecordType == LearningRecordType.Quran ? item.SurahName : null,
                     FromAyah = RecordType == LearningRecordType.Quran ? item.FromAyah : null,
                     ToAyah = RecordType == LearningRecordType.Quran ? item.ToAyah : null,
-                    Portion = RecordType == LearningRecordType.Mutoon ? item.Portion : null,
+                    MatnName = RecordType == LearningRecordType.Mutoon ? item.MatnName : null,
+                    FromPortion = RecordType == LearningRecordType.Mutoon ? item.FromPortion : null,
+                    ToPortion = RecordType == LearningRecordType.Mutoon ? item.ToPortion : null,
                     Remarks = item.Remarks,
                     TeacherUserId = user.Id
                 });
@@ -221,7 +244,9 @@ namespace StudentRecordSystem.Pages.TeacherPortal
                     item.SurahName = saved.SurahName;
                     item.FromAyah = saved.FromAyah;
                     item.ToAyah = saved.ToAyah;
-                    item.Portion = saved.Portion;
+                    item.MatnName = saved.MatnName;
+                    item.FromPortion = saved.FromPortion;
+                    item.ToPortion = saved.ToPortion;
                     item.Remarks = saved.Remarks;
                 }
             }

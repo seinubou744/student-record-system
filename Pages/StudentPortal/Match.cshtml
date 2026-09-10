@@ -132,7 +132,8 @@
                         {
                             <p class="section-subtitle mb-0">
                                 Your latest record:
-                                Portion <strong>@Model.MyLatestMutoon.Portion</strong>
+                                <strong>@Model.MyLatestMutoon.MatnName</strong>
+                                (@Model.MyLatestMutoon.FromPortion - @Model.MyLatestMutoon.ToPortion)
                             </p>
                         }
                         else
@@ -152,7 +153,8 @@
                                     <div>
                                         <h5 class="mb-1">@item.StudentName</h5>
                                         <p class="text-muted mb-1">Class: @item.ClassRoomName</p>
-                                        <p class="mb-2">Portion: <strong>@item.Portion</strong></p>
+                                        <p class="mb-1">Matn Name: <strong>@item.MatnName</strong></p>
+                                        <p class="mb-2">Portion: <strong>@item.FromPortion - @item.ToPortion</strong></p>
                                         <small class="text-muted">@item.MatchReason</small>
 
                                         <form method="post" asp-page-handler="SendRequest" class="mt-3">

@@ -12,5 +12,7 @@ namespace StudentRecordSystem.Models
 
         public ICollection<Student> Students { get; set; } = new List<Student>();
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+        public ICollection<Section> Sections { get; set; } = new List<Section>();
+        public ICollection<TimetableEntry> TimetableEntries { get; set; } = new List<TimetableEntry>();
     }
 }
