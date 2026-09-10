@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StudentRecordSystem.Data;
 using StudentRecordSystem.Models;
+using StudentRecordSystem.Services;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -12,9 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
+builder.Services.AddScoped<TimetableService>();
+builder.Services.AddControllers();
+
 var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? builder.Configuration["DATABASE_URL"];
+    builder.Configuration["DATABASE_URL"];
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -57,6 +62,10 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AuthorizePage("/StudentPortal/MutoonProgress", "StudentOnly");
     options.Conventions.AuthorizePage("/StudentPortal/Match", "StudentOnly");
     options.Conventions.AuthorizePage("/StudentPortal/Requests", "StudentOnly");
+
+    options.Conventions.AuthorizeFolder("/Timetable", "AdminOnly");
+    options.Conventions.AuthorizePage("/TeacherPortal/MyTimetable", "TeacherOnly");
+    options.Conventions.AuthorizePage("/StudentPortal/MySchedule", "StudentOnly");
 });
 
 builder.Services.AddAuthorization(options =>
@@ -110,6 +119,7 @@ app.UseRequestLocalization(localizationOptions);
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 app.MapRazorPages();
 
 app.Run();
